@@ -72,7 +72,7 @@ PreSens.Respiration <- function(infile = " ", outfile = " ", in.format = "Rows")
   # data.in[3:26] <- data.in[3:26] * 1000/32 # Convert mg O2/L to uM O2
 
 # Creat Output
-  titles <- c("Sample", "Start", "End", "Rate (µM O2 Hr-1)", "R2", "P-value")
+  titles <- c("Sample", "Start", "End", "Rate (uM O2 Hr-1)", "R2", "P-value")
   write.table(as.matrix(t(titles)), file=outfile, append=T, row.names=F, col.names=F, sep=",", quote=FALSE)
 
 # Select Samples
@@ -99,9 +99,12 @@ PreSens.Respiration <- function(infile = " ", outfile = " ", in.format = "Rows")
     data.in$samp <- panel$samp
     name <- panel$sample.name
 
+# Par Settings
+    par(mar=c(5,5,1,1))
+
 # Text placement points
   xaxis_pt <- max(Time) - 0.1*(max(Time)-min(Time))
-  yaxis_pt <- 275
+  yaxis_pt <- 375
 
 # Make data subset based on start & end yrs
   sub <- subset(data.in, Time >= start)
@@ -119,9 +122,9 @@ PreSens.Respiration <- function(infile = " ", outfile = " ", in.format = "Rows")
 
 # Make Basic plot
   plot(panel$samp ~ Time, type = "b", col = "darkgrey", xlab = "Time (Hrs)",
-    ylab = expression(paste("Oxygen Concentration (?M O "[2],")")),
-    par(bty="n"),xlim=c(0,max(Time)+10),ylim=c(0, 300),
-    xaxs = "i", yaxs = "i", axes = FALSE, cex.main = 0.95,
+    ylab = expression(paste("Oxygen Concentration (uM O "[2],")")),
+    par(bty="n"),xlim=c(0,max(Time)+0.5),ylim=c(0, 400),
+    xaxs = "i", yaxs = "i", axes = FALSE, cex.main = 1.25, cex.lab = 1.5,
     main = "Interactive Regression of PreSens Respiration Data")
   axis(1, col = "grey"); axis(2, col = "grey")
 
@@ -131,10 +134,10 @@ PreSens.Respiration <- function(infile = " ", outfile = " ", in.format = "Rows")
 	lines(x_vals, y_vals, col= "red")
   points(sub$Time, sub$samp, pch = 19, col = "red", type = "p")
   text(xaxis_pt, yaxis_pt, paste("Sample: ", name))
-  text(xaxis_pt, yaxis_pt - 10, paste("Period: ", start.2, " to " , end.2, "Hrs"))
-  text(xaxis_pt, yaxis_pt - 20, bquote(Rate == .(rate) ~ uM ~ O[2] ~ Hr^-1), cex=1)
-  text(xaxis_pt, yaxis_pt - 30, bquote(R^2 == .(r2)), cex=1)
-  text(xaxis_pt, yaxis_pt - 40, paste("P-value = ", p), cex=1)
+  text(xaxis_pt, yaxis_pt - 15, paste("Period: ", start.2, " to " , end.2, "Hrs"))
+  text(xaxis_pt, yaxis_pt - 30, bquote(Rate == .(rate) ~ uM ~ O[2] ~ Hr^-1), cex=1)
+  text(xaxis_pt, yaxis_pt - 45, bquote(R^2 == .(r2)), cex=1)
+  text(xaxis_pt, yaxis_pt - 60, paste("P-value = ", p), cex=1)
 
 ### Outer Margin Annotation
 	my_date <- format(Sys.time(), "%m/%d/%y")
@@ -150,8 +153,8 @@ PreSens.Respiration <- function(infile = " ", outfile = " ", in.format = "Rows")
     start <- panel$start
     end <- panel$end
     # Text placement points
-    xaxis_pt <- min(Time) + 0.25*(max(Time)-min(Time))
-    yaxis_pt <- 200
+    xaxis_pt <- max(Time) - 0.1*(max(Time)-min(Time))
+    yaxis_pt <- 375
     # Make data subset based on start & end yrs
     sub <- subset(data.in, Time >= start)
     sub <- subset(sub, Time <= end)
@@ -186,8 +189,8 @@ PreSens.Respiration <- function(infile = " ", outfile = " ", in.format = "Rows")
   rp.listbox(rpplot, variable = samp, vals = "Samples", labels = samples, action = draw)
   rp.slider(rpplot, start, action = draw, from = 0, to =  max(Time))
   rp.slider(rpplot, end, action = draw, from = 0, to =  max(Time))
-  rp.doublebutton(rpplot, var = start, step = 1, title = "Start Fine Adjustment", action = draw)
-  rp.doublebutton(rpplot, var = end, step = 1, title = "End Fine Adjustment", action = draw)
+  rp.doublebutton(rpplot, var = start, step = 0.05, title = "Start Fine Adjustment", action = draw)
+  rp.doublebutton(rpplot, var = end, step = 0.05, title = "End Fine Adjustment", action = draw)
   rp.textentry(rpplot, var = sample.name, action = draw, labels = "Sample Name", initval = "")
   rp.button(rpplot, title = "save", action = collect.data)
   rp.button(rpplot, title = "quit", action = end.session, quitbutton=T)

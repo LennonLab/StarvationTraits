@@ -10,21 +10,21 @@
 #                                                                              #
 ################################################################################
 
-setwd('C:/Users/Mario Muscarella/Documents/PhD Files/Projects/2013-PreSens/Analysis Script/')
+setwd("~/GitHub/StarvationTraits/")
 rm(list=ls())
 
 # Inport the function from source file
-source("PreSensInteractiveRegression.r")
+source("./bin/PreSensInteractiveRegression.R")
 
 ################################################################################
-# Examples ##################################################################### 
+# Examples #####################################################################
 ################################################################################
 
 # Example txt analysis
-PreSens.Respiration("Example.txt", "Example.Out.txt")
+PreSens.Respiration(infile = "./data/Respiration/ExampleData.txt",
+                    outfile = "./data/Respiration/ExampleData_Output.txt")
 
-# Example excel analysis (with data in column format)
-PreSens.Respiration("Example.xlsx", "Example.Out.txt", "Columns")
+# Example txt analysis
+PreSens.Respiration(infile = "./data/Respiration/20150701_BacterialRespiration_a_RNF_Oxygen.txt",
+                    outfile = "./data/Respiration/20150701_BacterialRespiration_a_RNF_Output.txt")
 
-#
-# Each of the above examples should open 
