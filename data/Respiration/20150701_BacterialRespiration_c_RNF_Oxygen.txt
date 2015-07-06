@@ -7,8 +7,7 @@ SDR Serial No. : S-350
 Report : @m01:IDENTIFICATION
 Serial number     : SEBX0005000350      
 MUX channel       : ON - 01
-
-PARAMETERS
+PARAMETERS
 Sig LED current   : 040
 Ref LED current   : 055
 Frequency         : 060
@@ -16,11 +15,9 @@ Report : @m01:IDENTIFICATION
 Pulse lenght      : 06
 Red REF comp.     : ON
 Temperature comp. : ON
-
-FIRMWARE
+FIRMWARE
 ver.4.039.A3.ST   : 04/30/07, 09:14:36
 @m01:RDY
-
 
 Temperature : 23.2
 Sensor Dish : Oxygen [cO2 [µmol/L]]
