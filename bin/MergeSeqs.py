@@ -5,7 +5,7 @@
 # Last Update 25 Apr 2013
 
 # Directions:
-#  use the following command: > python MergeSeqs.py (input type) (output name)
+#  use the following command: > python MergeSeqs.py (input name - in quotes) (input type) (output name)
 import sys
 import glob
 from Bio import SeqIO
