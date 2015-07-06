@@ -4,6 +4,8 @@
 # Written by Mario Muscarella
 # Last Update 25 Apr 2013
 
+# Directions:
+#  use the following command: > python ReadAB1.py
 import glob
 files = glob.glob("*.ab1")
 #names= []

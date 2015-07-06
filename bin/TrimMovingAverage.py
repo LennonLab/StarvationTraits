@@ -5,6 +5,7 @@
 # Last Update 2 May 2013
 
 # Directions:
+#  use the following command: > python TrimMovingAverage.py
 
 from Bio import SeqIO
 import sys
