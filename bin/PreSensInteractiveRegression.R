@@ -18,7 +18,7 @@
 PreSens.Respiration <- function(infile = " ", outfile = " ", in.format = "Rows"){
 # Load Dependencies
   require("rpanel")||install.packages("rpanel");require("rpanel")
-  require("xlsx")||install.packages("xlsx");require("xlsx")
+#  require("xlsx")||install.packages("xlsx");require("xlsx")
 
 # Global Options
   options(digits=6)
