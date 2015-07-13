@@ -37,7 +37,8 @@ For information regarding the main project, please visit:
 
 * **figures:**
 
-
+* ** notse:**
+    * EcoPlate_Info: Informational datasheet for the BioLog EcoPlate. 
 
 
 
