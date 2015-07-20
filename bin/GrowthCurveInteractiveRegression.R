@@ -3,7 +3,7 @@
 #  Analysis of SynergyMX Growth Curve Data                                     #
 #   Version 2.0                                                                #
 #  Written By: Mario Muscarella                                                #
-#  Last Update:16 Jul 2015                                                    #
+#  Last Update: 16 Jul 2015                                                    #
 #                                                                              #
 #  This analysis uses the R package - rpanel which does interactive regression #
 #  The goal is to use the interactive view to pick the area to analyze         #
@@ -18,66 +18,32 @@
 Growth.Expo <- function(infile = " ", outfile = " ", in.format = "Rows"){
 # Load Dependencies
   require("rpanel")||install.packages("rpanel");require("rpanel")
-  load(./bin/ReadSynergy.R)
-#  require("xlsx")||install.packages("xlsx");require("xlsx")
+  source("./bin/ReadSynergy.R")
 
 # Global Options
   options(digits=6)
   script <- "Interactive Regression Analysis"
 
 # Import Data
-  infile <- infile
-  if (grepl(".xls", infile)){                      ###1/27/14
-    data.in <- read.xlsx(infile, "Sheet4", header=T, startRow=11)
-    head(data.in)
-    if (in.format == "Rows"){
-      colnames(data.in) <- c("Date", "Time", "A1", "A2", "A3", "A4", "A5", "A6",
-        "B1", "B2", "B3", "B4", "B5", "B6", "C1", "C2", "C3", "C4",
-        "C5", "C6", "D1", "D2", "D3", "D4", "D5", "D6", "Temp", "Error")
-      } else {
-        if (in.format =="Columns"){
-          colnames(data.in) <- c("Date", "Time", "A1", "B1", "C1", "D1", "A2", "B2",
-            "C2", "D2", "A3", "B3", "C3", "D3", "A4", "B4", "C4", "D4", "A5", "B5",
-              "C5", "D5", "A6", "B6", "C6", "D6", "Temp", "Error")
-          } else {
-            stop("You must choose an input format")
-      }}
-    } else {
-    if (grepl(".txt", infile)){
-      data.in <- read.delim(infile, header=F, skip=46, sep=";",strip.white=T, stringsAsFactors=FALSE)[,1:29]
-      head(data.in)
-      if (in.format == "Rows"){
-        colnames(data.in) <- c("Date", "Time", "A1", "A2", "A3", "A4", "A5", "A6",
-          "B1", "B2", "B3", "B4", "B5", "B6", "C1", "C2", "C3", "C4",
-          "C5", "C6", "D1", "D2", "D3", "D4", "D5", "D6", "Blank", "Temp", "Error")
-        } else {
-          if (in.format =="Columns"){
-            colnames(data.in) <- c("Date", "Time", "A1", "B1", "C1", "D1", "A2", "B2",
-              "C2", "D2", "A3", "B3", "C3", "D3", "A4", "B4", "C4", "D4", "A5", "B5",
-              "C5", "D5", "A6", "B6", "C6", "D6", "Blank", "Temp", "Error")
-            } else {
-              stop("You must choose an input format")
-              }}
-      } else {
-        print("File must be either Excel or txt format")
-      }}
+  data.in <- read.synergy(input = infile, skip = "32")
 
-# Input Transformations
-  data.in$Date <- strptime(data.in[,1], format="%d.%m.%y%H:%M:%S")
-  data.in <- as.data.frame(data.in)
-  data.in[,3:26][data.in[,3:26] == "No Sensor"] <- NA
-  for (i in 3:26){
-    data.in[,i] <- as.numeric(data.in[,i])
-    }
-  data.in$Time <- data.in$Time/3600 # Convert sec to Hrs
-  # data.in[3:26] <- data.in[3:26] * 1000/32 # Convert mg O2/L to uM O2
+# Exponential Transformation
+  data.log <- matrix(NA, nrow = dim(data.in)[1], ncol = dim(data.in)[2])
+  colnames(data.log) <- colnames(data.in)
+  data.log[,1:2] <- as.matrix(data.in[,1:2])
+  for (i in 3:dim(data.in)[2]){
+    data.log[,i] <- round(sapply(data.in[,i], log1p), 3)
+  }
+
+  data.log <- as.data.frame(data.log)
+  data.log <- data.in # no transformation - testing
 
 # Creat Output
-  titles <- c("Sample", "Start", "End", "Rate (uM O2 Hr-1)", "R2", "P-value")
-  write.table(as.matrix(t(titles)), file=outfile, append=T, row.names=F, col.names=F, sep=",", quote=FALSE)
+  titles <- c("Sample", "Start", "End", "Rate", "R2", "P-value")
+  # write.table(as.matrix(t(titles)), file=outfile, append=T, row.names=F, col.names=F, sep=",", quote=FALSE)
 
 # Select Samples
-  samples <- as.factor(colnames(data.in)[3:26])
+  samples <- as.factor(colnames(data.log)[3:26])
 
 # Create Plotting Window
   windows()
@@ -86,7 +52,7 @@ Growth.Expo <- function(infile = " ", outfile = " ", in.format = "Rows"){
   par(ps=9); par(cex.axis=c(0.9)); par(cex.lab=c(0.9)); par(oma=c(3,1,1,0.5)); par(mar=c(4,4,2,1))
 
 # Attach Data
-  attach(data.in)
+  attach(data.log)
 
 ### rpanel function ################
   draw <- function(panel) {
@@ -97,7 +63,7 @@ Growth.Expo <- function(infile = " ", outfile = " ", in.format = "Rows"){
       {start <- min(Time)
       end <- max(Time)}
 
-    data.in$samp <- panel$samp
+    data.log$samp <- panel$samp
     name <- panel$sample.name
 
 # Par Settings
@@ -108,7 +74,7 @@ Growth.Expo <- function(infile = " ", outfile = " ", in.format = "Rows"){
   yaxis_pt <- 375
 
 # Make data subset based on start & end yrs
-  sub <- subset(data.in, Time >= start)
+  sub <- subset(data.log, Time >= start)
   sub <- subset(sub, Time <= end)
 
 # Linear trend line lm & coefs / stats
@@ -122,11 +88,11 @@ Growth.Expo <- function(infile = " ", outfile = " ", in.format = "Rows"){
   rate <- signif(-b,3)
 
 # Make Basic plot
-  plot(panel$samp ~ Time, type = "b", col = "darkgrey", xlab = "Time (Hrs)",
-    ylab = expression(paste("Oxygen Concentration (uM O "[2],")")),
-    par(bty="n"),xlim=c(0,max(Time)+0.5),ylim=c(0, 400),
+  plot(log1p(panel$samp) ~ Time, type = "b", col = "darkgrey", xlab = "Time (Hrs)",
+    ylab = expression(paste("Log OD (uM O "[2],")")), log="y",
+    par(bty="n"),xlim=c(0,max(Time)+0.5),# ylim=c(0, 1),
     xaxs = "i", yaxs = "i", axes = FALSE, cex.main = 1.25, cex.lab = 1.5,
-    main = "Interactive Regression of PreSens Respiration Data")
+    main = "Interactive Regression of Exponential Growth Rate Data")
   axis(1, col = "grey"); axis(2, col = "grey")
 
 # Calc vals for start-end regression line & add line
@@ -136,7 +102,7 @@ Growth.Expo <- function(infile = " ", outfile = " ", in.format = "Rows"){
   points(sub$Time, sub$samp, pch = 19, col = "red", type = "p")
   text(xaxis_pt, yaxis_pt, paste("Sample: ", name))
   text(xaxis_pt, yaxis_pt - 15, paste("Period: ", start.2, " to " , end.2, "Hrs"))
-  text(xaxis_pt, yaxis_pt - 30, bquote(Rate == .(rate) ~ uM ~ O[2] ~ Hr^-1), cex=1)
+  text(xaxis_pt, yaxis_pt - 30, bquote(Rate == .(rate) ~ Hr^-1), cex=1)
   text(xaxis_pt, yaxis_pt - 45, bquote(R^2 == .(r2)), cex=1)
   text(xaxis_pt, yaxis_pt - 60, paste("P-value = ", p), cex=1)
 
@@ -149,7 +115,7 @@ Growth.Expo <- function(infile = " ", outfile = " ", in.format = "Rows"){
   }
 
   collect.data <- function(panel) {
-    data.in$samp <- panel$samp
+    data.log$samp <- panel$samp
     name <- panel$sample.name
     start <- panel$start
     end <- panel$end
@@ -157,7 +123,7 @@ Growth.Expo <- function(infile = " ", outfile = " ", in.format = "Rows"){
     xaxis_pt <- max(Time) - 0.1*(max(Time)-min(Time))
     yaxis_pt <- 375
     # Make data subset based on start & end yrs
-    sub <- subset(data.in, Time >= start)
+    sub <- subset(data.lot, Time >= start)
     sub <- subset(sub, Time <= end)
     # Linear trend line lm & coefs / stats
     trend <- lm(sub$samp ~ sub$Time)
@@ -175,7 +141,7 @@ Growth.Expo <- function(infile = " ", outfile = " ", in.format = "Rows"){
     data.r2 <- r2
     data.p <- p
     data.out <- c(data.sample, data.start, data.end, data.rate, data.r2, data.p)
-    write.table(as.matrix(t(data.out)), file=outfile, append=T, row.names=F, col.names=F, sep=",", quote=FALSE)
+    #write.table(as.matrix(t(data.out)), file=outfile, append=T, row.names=F, col.names=F, sep=",", quote=FALSE)
     panel
     }
 
