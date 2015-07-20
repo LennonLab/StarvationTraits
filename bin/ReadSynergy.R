@@ -13,7 +13,7 @@
 #   Outputs data matric {Time, Temp, Well...                                   #
 ################################################################################
 
-read.synergy <- function(input = " ", skip = ""){
+read.synergy <- function(input = "", skip = ""){
   data.in <- read.delim(input, skip=skip, header=T, as.is=T)
   results.start <- which(data.in == "Results")
   data.out <- data.in[1:(results.start - 2),]
@@ -25,4 +25,3 @@ read.synergy <- function(input = " ", skip = ""){
     if (is.numeric(data.out[,i]) == FALSE){data.out[,i] = as.numeric(data.out[,i])}}
   return(data.out)
   }
-
