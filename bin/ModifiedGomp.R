@@ -13,7 +13,7 @@
 ################################################################################
 
 growth.modGomp <- function(input=" ", output=" ", intercept.guess=0.1,
-                           synergy=T, skip = ""){
+                           synergy=T, skip = "", delta.temp = 3){
 # Input = Raw txt output file from Synergy MX
 # Intercept.guess = initial guess of non-grid parameter for y intercept '
 # synergy=T --> the data comes from the synergy mx machine.
@@ -30,7 +30,7 @@ growth.modGomp <- function(input=" ", output=" ", intercept.guess=0.1,
   temp.min <- min(data.in$Temp)
   temp.max <- max(data.in$Temp)
   temp.diff <- temp.max - temp.min
-  if (temp.diff < 3) {} else {stop("Stop, check for temperature effects")}
+  if (temp.diff < delta.temp) {} else {stop("Stop, check for temperature effects")}
   samples <- colnames(data.in[3:dim(data.in)[2]])
 
   # Initialize Data Storage
