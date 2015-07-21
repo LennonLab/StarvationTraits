@@ -1,0 +1,6 @@
+KBS0701- Pedobacter, except 7011A-C which are Pseudomonas
+KBS0702- Arthrobacter, all derived are Pseudomonas
+KBS0703- Arthrobacter, all derived are correct
+KBS710- Pseudomonas, all derived are correct
+KBS0723- Pseudomonas, all derived are correct
+KBS0724- Rhodococcus?, unable to obtain sequences for most, including ancestor. Derived strains that have been sequenced are rhodococcus

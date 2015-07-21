@@ -29,5 +29,21 @@ growth.modGomp("./data/GrowthCurves/GrowthCurveExample.txt", "test", skip=31)
 
 # Run Example with RNF Data
 growth.modGomp("./data/GrowthCurves/RNF_GrowthCurve_20150625_plate2.txt",
-               "plate2_test", skip=32)
+               "plate2", skip=32)
 
+growth.modGomp("./data/GrowthCurves/RNF_GrowthCurve_20150624_plate1.txt",
+               "plate1", skip=32)
+
+growth.modGomp("./data/GrowthCurves/RNF_GrowthCurve_20150626_plate3.txt",
+               "plate3", skip=32)
+
+
+growth.modGomp("./data/GrowthCurves/RNF_GrowthCurve_20150626_plate4.txt",
+               "plate4", skip=32)
+
+growth.modGomp("./data/GrowthCurves/RNF_GrowthCurve_20150719_plate5.txt",
+               "plate5", skip=32)
+
+growth.modGomp("./data/GrowthCurves/RNF_GrowthCurve_20150701_plate6.txt",
+               "plate6", skip=32)
+#Changed temperature parameter because 4 degree temperature difference instead of 3
