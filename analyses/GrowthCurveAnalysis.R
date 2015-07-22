@@ -3,7 +3,7 @@
 #  Script for Analysis of Exponential Growth Curve Data                        #
 #   This uses ModifiedGomp.R Version 2.0                                       #
 #  Written By: Rachel Ferrill & Mario Muscarella                               #
-#  Last Update: 17 Jul 2015                                                    #
+#  Last Update: 22 Jul 2015                                                    #
 #                                                                              #
 #  Use this file to analyze Synergy MX Growth Curve data                       #
 #                                                                              #
