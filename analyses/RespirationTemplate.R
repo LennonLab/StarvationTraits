@@ -20,24 +20,28 @@ rm(list=ls())
 source("./bin/PreSensInteractiveRegression.R")
 
 ################################################################################
-# Examples #####################################################################
+# Example ######################################################################
 ################################################################################
 
 # Example txt analysis
 PreSens.Respiration(infile = "./data/Respiration/ExampleData.txt",
                     outfile = "./data/Respiration/ExampleData_Output.txt")
 
+################################################################################
+# Starvation Traits Experiment Data ############################################
+################################################################################
 
-# Respiration Analysis: 7/1/2015
+# The following lines of code import and analyze the PreSens respiration data
+# for the Starvation Traits Experiment by Rachel Ferrill.
+# The file names indicate the date the experiments were run and the plate (a-l).
+
+
 PreSens.Respiration(infile = "./data/Respiration/20150701_BacterialRespiration_a_RNF_Oxygen.txt",
                     outfile = "./data/Respiration/20150701_BacterialRespiration_a_RNF_Output.txt")
 
-# Respiration Analysis: 7/1/2015
 PreSens.Respiration(infile = "./data/Respiration/20150701_BacterialRespiration_b_RNF_Oxygen.txt",
                     outfile = "./data/Respiration/20150701_BacterialRespiration_b_RNF_Output.txt")
 
-
-# Respiration Analysis: 7/1/2015
 PreSens.Respiration(infile = "./data/Respiration/20150701_BacterialRespiration_c_RNF_Oxygen.txt",
                     outfile = "./data/Respiration/20150701_BacterialRespiration_c_RNF_Output.txt")
 

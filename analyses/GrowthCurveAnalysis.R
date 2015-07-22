@@ -5,7 +5,7 @@
 #  Written By: Rachel Ferrill & Mario Muscarella                               #
 #  Last Update: 17 Jul 2015                                                    #
 #                                                                              #
-#  Use this file to analyze PreSens respiration data                           #
+#  Use this file to analyze Synergy MX Growth Curve data                       #
 #                                                                              #
 ################################################################################
 
@@ -32,7 +32,7 @@ growth.modGomp("./data/GrowthCurves/GrowthCurveExample.txt", "test", skip=31)
 
 # The following lines of code import and analyze the growth curve data for
 # the Starvation Traits Experiment by Rachel Ferrill.
-# The file names indicate the date the experiments were fun and the plate.
+# The file names indicate the date the experiments were run and the plate.
 # The plate information correspondes to the IDs for each experiment.
 # Because of some minor temperature changes in the lab, we changed the
 # temperature parameter (delta.temp) from 3 degresse to 4.
