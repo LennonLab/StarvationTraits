@@ -4,28 +4,28 @@
 #  Respiration Graphs
 ####################################################################
 
-setwd("~/GitHub/StarvationTraits/data/Respiration")
+setwd("~/GitHub/StarvationTraits")
 rm(list=ls())
 
 # Define Functions
 sem <- function(x){sd(x)/sqrt(3)}
 
-# Import Data Files
-resp1 <- read.csv("20150701_BacterialRespiration_a_RNF_Output.txt")
-resp2 <- read.csv("20150701_BacterialRespiration_b_RNF_Output.txt")
-resp3 <- read.csv("20150701_BacterialRespiration_c_RNF_Output.txt")
-resp4 <- read.csv("20150707_BacterialRespiration_d_RNF_Output.txt")
-resp5 <- read.csv("20150707_BacterialRespiration_e_RNF_Output.txt")
-resp6 <- read.csv("20150710_BacterialRespiration_f_RNF_Output.txt")
-resp7 <- read.csv("20150710_BacterialRespiration_g_RNF_Output.txt")
-resp8 <- read.csv("20150714_BacterialRespiration_h_RNF_Output.txt")
-resp9 <- read.csv("20150715_BacterialRespiration_i_RNF_Output.txt")
-resp10 <- read.csv("20150715_BacterialRespiration_j_RNF_Output.txt")
-resp11 <- read.csv("20150716_BacterialRespiration_k_RNF_Output.txt")
-resp12 <- read.csv("20150716_BacterialRespiration_l_RNF_Output.txt")
-
+# Import Data Files (Output from PreSens Respiration Analysis)
+resp1  <- read.csv("./data/Respiration/20150701_BacterialRespiration_a_RNF_Output.txt")
+resp2  <- read.csv("./data/Respiration/20150701_BacterialRespiration_b_RNF_Output.txt")
+resp3  <- read.csv("./data/Respiration/20150701_BacterialRespiration_c_RNF_Output.txt")
+resp4  <- read.csv("./data/Respiration/20150707_BacterialRespiration_d_RNF_Output.txt")
+resp5  <- read.csv("./data/Respiration/20150707_BacterialRespiration_e_RNF_Output.txt")
+resp6  <- read.csv("./data/Respiration/20150710_BacterialRespiration_f_RNF_Output.txt")
+resp7  <- read.csv("./data/Respiration/20150710_BacterialRespiration_g_RNF_Output.txt")
+resp8  <- read.csv("./data/Respiration/20150714_BacterialRespiration_h_RNF_Output.txt")
+resp9  <- read.csv("./data/Respiration/20150715_BacterialRespiration_i_RNF_Output.txt")
+resp10 <- read.csv("./data/Respiration/20150715_BacterialRespiration_j_RNF_Output.txt")
+resp11 <- read.csv("./data/Respiration/20150716_BacterialRespiration_k_RNF_Output.txt")
+resp12 <- read.csv("./data/Respiration/20150716_BacterialRespiration_l_RNF_Output.txt")
 
 # Seperate Based on Isolate
+# Plate 1
 A7022 <- resp1[1:3,]
 A7022_mean <- mean(A7022$Rate..uM.O2.Hr.1.)
 A7022_sem <- sem(A7022$Rate..uM.O2.Hr.1.)
@@ -50,9 +50,7 @@ C7025_sem <-sem(C7025$Rate..uM.O2.Hr.1.)
 mean(C7025[,4])
 sem(C7025[,4])
 
-
-
-
+# Plate 2
 D7025 <- resp2[1:3,]
 D7025_mean <-mean(D7025$Rate..uM.O2.Hr.1.)
 D7025_sem <-sem(D7025$Rate..uM.O2.Hr.1.)
@@ -75,8 +73,7 @@ B7031 <- resp2[19:21,]
 B7031_mean <-mean(B7031$Rate..uM.O2.Hr.1.)
 B7031_sem <-sem(B7031$Rate..uM.O2.Hr.1.)
 
-
-
+# Plate 3
 A7032 <- resp3[1:3,]
 A7032_mean <-mean(A7032$Rate..uM.O2.Hr.1.)
 A7032_sem <-sem(A7032$Rate..uM.O2.Hr.1.)
@@ -93,6 +90,7 @@ A7034 <- resp3[13:15,]
 A7034_mean <-mean(A7034$Rate..uM.O2.Hr.1.)
 A7034_sem <-sem(A7034$Rate..uM.O2.Hr.1.)
 
+# Plate 4
 B7034 <- resp4[1:3,]
 B7034_mean <- mean(B7034$Rate..uM.O2.Hr.1.)
 B7034_sem <- sem(B7034$Rate..uM.O2.Hr.1.)
@@ -112,7 +110,7 @@ D7101 <- resp4[16:18,]
 D7101_mean <-mean(D7101$Rate..uM.O2.Hr.1.)
 D7101_sem <-sem(D7101$Rate..uM.O2.Hr.1.)
 
-
+# Plate 5
 A7102 <- resp5[1:4,]
 A7102_mean <- mean(A7102$Rate..uM.O2.Hr.1.)
 A7102_sem <- sem(A7102$Rate..uM.O2.Hr.1.)
@@ -135,6 +133,7 @@ C7103 <- resp5[19:21,]
 C7103_mean <-mean(C7103$Rate..uM.O2.Hr.1.)
 C7103_sem <-sem(C7103$Rate..uM.O2.Hr.1.)
 
+# Plate 6
 D7103 <- resp6[1:3,]
 D7103_mean <-mean(D7103$Rate..uM.O2.Hr.1.)
 D7103_sem <-sem(D7103$Rate..uM.O2.Hr.1.)
@@ -157,6 +156,7 @@ B7232 <- resp6[19:21,]
 B7232_mean <-mean(B7232$Rate..uM.O2.Hr.1.)
 B7232_sem <-sem(B7232$Rate..uM.O2.Hr.1.)
 
+# Plate 7
 C7031 <- resp7[1:3,]
 C7031_mean <-mean(C7031$Rate..uM.O2.Hr.1.)
 C7031_sem <-sem(C7031$Rate..uM.O2.Hr.1.)
@@ -176,6 +176,7 @@ A723 <- resp7[16:18,]
 A723_mean <-mean(A723$Rate..uM.O2.Hr.1.)
 A723_sem <-sem(A723$Rate..uM.O2.Hr.1.)
 
+# Plate 8
 C7232 <- resp8[1:3,]
 C7232_mean <-mean(C7232$Rate..uM.O2.Hr.1.)
 C7232_sem <-sem(C7232$Rate..uM.O2.Hr.1.)
@@ -195,6 +196,7 @@ D7233 <- resp8[16:18,]
 D7233_mean <-mean(D7233$Rate..uM.O2.Hr.1.)
 D7233_sem <-sem(D7233$Rate..uM.O2.Hr.1.)
 
+# Plate 9
 B7241 <- resp9[1:3,]
 B7241_mean <-mean(B7241$Rate..uM.O2.Hr.1.)
 B7241_sem <-sem(B7241$Rate..uM.O2.Hr.1.)
@@ -217,6 +219,7 @@ D7242 <- resp9[19:21,]
 D7242_mean <-mean(D7242$Rate..uM.O2.Hr.1.)
 D7242_sem <-sem(D7242$Rate..uM.O2.Hr.1.)
 
+# Plate 10
 A7243 <- resp10[1:3,]
 A7243_mean <-mean(A7243$Rate..uM.O2.Hr.1.)
 A7243_sem <-sem(A7243$Rate..uM.O2.Hr.1.)
@@ -239,6 +242,7 @@ A7241 <- resp10[19:21,]
 A7241_mean <-mean(A7241$Rate..uM.O2.Hr.1.)
 A7241_sem <-sem(A7241$Rate..uM.O2.Hr.1.)
 
+# Plate 11
 A7011 <- resp11[1:3,]
 A7011_mean <-mean(A7011$Rate..uM.O2.Hr.1.)
 A7011_sem <-sem(A7011$Rate..uM.O2.Hr.1.)
@@ -261,6 +265,7 @@ C7011b <- resp11[19:21,]
 C7011b_mean <-mean(C7011b$Rate..uM.O2.Hr.1.)
 C7011b_sem <-sem(C7011b$Rate..uM.O2.Hr.1.)
 
+# Plate 12
 D7011b <- resp12[1:3,]
 D7011b_mean <-mean(D7011b$Rate..uM.O2.Hr.1.)
 D7011b_sem <-sem(D7011b$Rate..uM.O2.Hr.1.)
@@ -281,38 +286,50 @@ A701_mean <-mean(A701$Rate..uM.O2.Hr.1.)
 A701_sem <-sem(A701$Rate..uM.O2.Hr.1.)
 
 
-
-means701 <-c(A701_mean, A7011_mean, B7011_mean, C7011_mean, D7011_mean, A7011b_mean, B7011b_mean, 
+# Combine means and sems based on isolate
+means701 <-c(A701_mean, A7011_mean, B7011_mean, C7011_mean, D7011_mean, A7011b_mean, B7011b_mean,
            C7011b_mean, D7011b_mean, A7013_mean, B7013_mean, C7013_mean, D7013_mean)
-means702 <-c(A702_mean, A7022_mean, B7022_mean, C7022_mean, D7022_mean, A7025_mean, B7025_mean, 
+means702 <-c(A702_mean, A7022_mean, B7022_mean, C7022_mean, D7022_mean, A7025_mean, B7025_mean,
             C7025_mean, D7025_mean, A7026_mean, B7026_mean, C7026_mean, D7026_mean)
-means703 <-c(A703_mean, A7031_mean, B7031_mean, C7031_mean, D7031_mean, A7032_mean, B7032_mean, 
-             C7032_mean, D7032_mean, A7034_mean, B7034_mean, C7034_mean, D7034_mean) 
-means710 <-c(A710_mean, A7101_mean, B7101_mean, C7101_mean, D7101_mean, A7102_mean, B7102_mean, 
+means703 <-c(A703_mean, A7031_mean, B7031_mean, C7031_mean, D7031_mean, A7032_mean, B7032_mean,
+             C7032_mean, D7032_mean, A7034_mean, B7034_mean, C7034_mean, D7034_mean)
+means710 <-c(A710_mean, A7101_mean, B7101_mean, C7101_mean, D7101_mean, A7102_mean, B7102_mean,
              C7102_mean, D7102_mean, A7103_mean, B7103_mean, C7103_mean, D7103_mean)
-means723 <-c(A723_mean, A7231_mean, B7231_mean, C7231_mean, D7231_mean, A7232_mean, B7232_mean, 
-             C7232_mean, D7232_mean, A7233_mean, B7233_mean, C7233_mean, D7233_mean) 
-means724 <-c(A724_mean, A7241_mean, B7241_mean, C7241_mean, D7241_mean, A7242_mean, B7242_mean, 
+means723 <-c(A723_mean, A7231_mean, B7231_mean, C7231_mean, D7231_mean, A7232_mean, B7232_mean,
+             C7232_mean, D7232_mean, A7233_mean, B7233_mean, C7233_mean, D7233_mean)
+means724 <-c(A724_mean, A7241_mean, B7241_mean, C7241_mean, D7241_mean, A7242_mean, B7242_mean,
              C7242_mean, D7242_mean, A7243_mean, B7243_mean, C7243_mean, D7243_mean)
 
-sems701 <-c(A701_sem, A7011_sem, B7011_sem, C7011_sem, D7011_sem, A7011b_sem, B7011b_sem, 
-           C7011b_sem, D7011b_sem, A7013_sem, B7013_sem, C7013_sem, D7013_sem) 
-sems702 <-c(A702_sem, A7022_sem, B7022_sem, C7022_sem, D7022_sem, A7025_sem, B7025_sem, C7025_sem, 
+sems701 <-c(A701_sem, A7011_sem, B7011_sem, C7011_sem, D7011_sem, A7011b_sem, B7011b_sem,
+           C7011b_sem, D7011b_sem, A7013_sem, B7013_sem, C7013_sem, D7013_sem)
+sems702 <-c(A702_sem, A7022_sem, B7022_sem, C7022_sem, D7022_sem, A7025_sem, B7025_sem, C7025_sem,
             D7025_sem,A7026_sem, B7026_sem, C7026_sem, D7026_sem)
-sems703 <-c(A703_sem, A7031_sem, B7031_sem, C7031_sem, D7031_sem, A7032_sem, B7032_sem, C7032_sem, 
+sems703 <-c(A703_sem, A7031_sem, B7031_sem, C7031_sem, D7031_sem, A7032_sem, B7032_sem, C7032_sem,
             D7032_sem, A7034_sem, B7034_sem, C7034_sem, D7034_sem)
-sems710 <-c(A710_sem, A7101_sem, B7101_sem, C7101_sem, D7101_sem, A7102_sem, B7102_sem, 
+sems710 <-c(A710_sem, A7101_sem, B7101_sem, C7101_sem, D7101_sem, A7102_sem, B7102_sem,
             C7102_sem, D7102_sem, A7103_sem, B7103_sem, C7103_sem, D7103_sem)
-sems723 <-c(A723_sem, A7231_sem, B7231_sem, C7231_sem, D7231_sem, A7232_sem, B7232_sem, 
+sems723 <-c(A723_sem, A7231_sem, B7231_sem, C7231_sem, D7231_sem, A7232_sem, B7232_sem,
             C7232_sem, D7232_sem, A7233_sem, B7233_sem, C7233_sem, D7233_sem)
-sems724 <-c(A724_sem, A7241_sem, B7241_sem, C7241_sem, D7241_sem, A7242_sem, B7242_sem, 
+sems724 <-c(A724_sem, A7241_sem, B7241_sem, C7241_sem, D7241_sem, A7242_sem, B7242_sem,
             C7242_sem, D7242_sem, A7243_sem, B7243_sem, C7243_sem, D7243_sem)
 
+# Set Default Plot Parameters
 par(mar=c(6, 5, 1, 1) + 0.1)
-bp701 <-barplot(means701, ylab=expression(paste("Respiration (", mu, "M O2 Hr-1)")), las = 2, names.arg=c("A701", "A7011", "B7011", "C7011", "D7011", "A7011b", "B7011b", "C7011b", "D7011b", "A7013", "B7013", "C7013", "D7013"))
+
+# Plot Respiration Responses by Organism
+bp701 <-barplot(means701, las=2, ylim = c(0, 1.2*max(means701+sems701)),
+                ylab=expression(paste("Respiration (",mu,"M O"^2," Hr"^-1,")")),
+                las = 2, names.arg=c("A701", "A7011", "B7011", "C7011", "D7011",
+                "A7011b", "B7011b", "C7011b", "D7011b", "A7013", "B7013",
+                "C7013", "D7013"),
+                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp701, y0=means701, y1=means701-sems701, angle=90, length=0.1, lwd=1)
 arrows(x0=bp701, y0=means701, y1=means701+sems701, angle=90, length=0.1, lwd=1)
+arrows(x0=bp701[1], y0=means701[1], y1=means701[1]-sems701[1], angle=90,
+       length=0.1, lwd=1, col = "white")
+legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
 bp702 <-barplot(means702, ylab=expression(paste("Respiration (", mu, "M O2 Hr-1)")), las = 2, names.arg=c("A702", "A7022", "B7022", "C7022", "D7022", "A7025", "B7025", "C7025", "D7025", "A7026", "B7026", "C7026", "D7026"))
 mtext("Isolate", side=1, line = 4.5)
