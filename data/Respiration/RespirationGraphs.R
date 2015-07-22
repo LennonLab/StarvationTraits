@@ -47,10 +47,6 @@ B7025_sem <-sem(B7025$Rate..uM.O2.Hr.1.)
 C7025 <- resp1[19:21,]
 C7025_mean <-mean(C7025$Rate..uM.O2.Hr.1.)
 C7025_sem <-sem(C7025$Rate..uM.O2.Hr.1.)
-mean(C7025[,4])
-sem(C7025[,4])
-
-
 
 
 D7025 <- resp2[1:3,]
@@ -338,4 +334,3 @@ bp724 <-barplot(means724, ylab=expression(paste("Respiration (", mu, "M O2 Hr-1)
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp724, y0=means724, y1=means724-sems724, angle=90, length=0.1, lwd=1)
 arrows(x0=bp724, y0=means724, y1=means724+sems724, angle=90, length=0.1, lwd=1)
-
