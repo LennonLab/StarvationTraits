@@ -24,7 +24,3 @@ source("./bin/PreSensInteractiveRegression.R")
 PreSens.Respiration(infile = "./data/Respiration/ExampleData.txt",
                     outfile = "./data/Respiration/ExampleData_Output.txt")
 
-# Example txt analysis
-PreSens.Respiration(infile = "./data/Respiration/20150701_BacterialRespiration_a_RNF_Oxygen.txt",
-                    outfile = "./data/Respiration/20150701_BacterialRespiration_a_RNF_Output.txt")
-
