@@ -47,10 +47,12 @@ B7025_sem <-sem(B7025$Rate..uM.O2.Hr.1.)
 C7025 <- resp1[19:21,]
 C7025_mean <-mean(C7025$Rate..uM.O2.Hr.1.)
 C7025_sem <-sem(C7025$Rate..uM.O2.Hr.1.)
-mean(C7025[,4])
-sem(C7025[,4])
+<<<<<<< HEAD:data/Respiration/RespirationGraphs.R
+
+
 
 # Plate 2
+>>>>>>> upstream/master:analyses/RespirationResponses.R
 D7025 <- resp2[1:3,]
 D7025_mean <-mean(D7025$Rate..uM.O2.Hr.1.)
 D7025_sem <-sem(D7025$Rate..uM.O2.Hr.1.)
@@ -331,28 +333,73 @@ arrows(x0=bp701[1], y0=means701[1], y1=means701[1]-sems701[1], angle=90,
 legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
-bp702 <-barplot(means702, ylab=expression(paste("Respiration (", mu, "M O2 Hr-1)")), las = 2, names.arg=c("A702", "A7022", "B7022", "C7022", "D7022", "A7025", "B7025", "C7025", "D7025", "A7026", "B7026", "C7026", "D7026"))
+bp702 <-barplot(means702, las=2, ylim = c(0, 1.2*max(means702+sems702)),
+                ylab=expression(paste("Respiration (",mu,"M O"^2," Hr"^-1,")")), 
+                las = 2, names.arg=c("A702", "A7022", "B7022", "C7022", "D7022", 
+                                     "A7025", "B7025", "C7025", "D7025", "A7026", 
+                                     "B7026", "C7026", "D7026"), 
+                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
-arrows(x0=bp702, y0=means702, y1=means702-sems702, angle=90, length=0.1, lwd=1) # length
+arrows(x0=bp702, y0=means702, y1=means702-sems702, angle=90, length=0.1, lwd=1)
 arrows(x0=bp702, y0=means702, y1=means702+sems702, angle=90, length=0.1, lwd=1)
+arrows(x0=bp702[1], y0=means702[1], y1=means702[1]-sems702[1], angle=90,
+       length=0.1, lwd=1, col = "white")
+legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
-bp703 <-barplot(means703, ylab=expression(paste("Respiration (", mu, "M O2 Hr-1)")), las = 2, names.arg=c("A703", "A7031", "B7031", "C7031", "D7031", "A7032", "B7032", "C7032", "D7032", "A7034", "B7034", "C7034", "D7034"))
+
+bp703 <-barplot(means703, las=2, ylim = c(0, 1.2*max(means703+sems703)),
+                ylab=expression(paste("Respiration (",mu,"M O"^2," Hr"^-1,")")), 
+                las = 2, names.arg=c("A703", "A7031", "B7031", "C7031", "D7031", 
+                                     "A7032", "B7032", "C7032", "D7032", "A7034", 
+                                     "B7034", "C7034", "D7034"), 
+                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp703, y0=means703, y1=means703-sems703, angle=90, length=0.1, lwd=1)
 arrows(x0=bp703, y0=means703, y1=means703+sems703, angle=90, length=0.1, lwd=1)
+arrows(x0=bp701[1], y0=means703[1], y1=means703[1]-sems703[1], angle=90,
+       length=0.1, lwd=1, col = "white")
+legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
-bp710 <-barplot(means710, ylab=expression(paste("Respiration (", mu, "M O2 Hr-1)")), las = 2, names.arg=c("A710", "A7101", "B7101", "C7101", "D7101", "A7102", "B7102", "C7102", "D7102", "A7103", "B7103", "C7103", "D7103"))
+bp710 <-barplot(means710, las=2, ylim = c(0, 1.2*max(means710+sems710)),
+                ylab=expression(paste("Respiration (",mu,"M O"^2," Hr"^-1,")")), 
+                las = 2, names.arg=c("A710", "A7101", "B7101", "C7101", "D7101", 
+                                     "A7102", "B7102", "C7102", "D7102", "A7103", 
+                                     "B7103", "C7103", "D7103"), 
+                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp710, y0=means710, y1=means710-sems710, angle=90, length=0.1, lwd=1)
 arrows(x0=bp710, y0=means710, y1=means710+sems710, angle=90, length=0.1, lwd=1)
+arrows(x0=bp710[1], y0=means710[1], y1=means710[1]-sems710[1], angle=90,
+       length=0.1, lwd=1, col = "white")
+legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
-bp723 <-barplot(means723, ylab=expression(paste("Respiration (", mu, "M O2 Hr-1)")), las = 2, names.arg=c("A723", "A7231", "B7231", "C7231", "D7231", "A7232", "B7232", "C7232", "D7232", "A7233", "B7233", "C7233", "D7233"))
+bp723 <-barplot(means723, las=2, ylim = c(0, 1.2*max(means723+sems723)),
+                ylab=expression(paste("Respiration (",mu,"M O"^2," Hr"^-1,")")), 
+                las = 2, names.arg=c("A723", "A7231", "B7231", "C7231", "D7231", 
+                                     "A7232", "B7232", "C7232", "D7232", "A7233", 
+                                     "B7233", "C7233", "D7233"), 
+                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp723, y0=means723, y1=means723-sems723, angle=90, length=0.1, lwd=1)
 arrows(x0=bp723, y0=means723, y1=means723+sems723, angle=90, length=0.1, lwd=1)
+arrows(x0=bp723[1], y0=means723[1], y1=means723[1]-sems723[1], angle=90,
+       length=0.1, lwd=1, col = "white")
+legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
-bp724 <-barplot(means724, ylab=expression(paste("Respiration (", mu, "M O2 Hr-1)")), las = 2, names.arg=c("A724", "A7241", "B7241", "C7241", "D7241", "A7242", "B7242", "C7242", "D7242", "A7243", "B7243", "C7243", "D7243"))
+bp724 <-barplot(means724, las=2, ylim = c(0, 1.2*max(means724+sems724)),
+                ylab=expression(paste("Respiration (",mu,"M O"^2," Hr"^-1,")")), 
+                las = 2, names.arg=c("A724", "A7241", "B7241", "C7241", "D7241", 
+                                     "A7242", "B7242", "C7242", "D7242", "A7243", 
+                                     "B7243", "C7243", "D7243"), 
+                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp724, y0=means724, y1=means724-sems724, angle=90, length=0.1, lwd=1)
 arrows(x0=bp724, y0=means724, y1=means724+sems724, angle=90, length=0.1, lwd=1)
-
+arrows(x0=bp724[1], y0=means724[1], y1=means724[1]-sems724[1], angle=90,
+       length=0.1, lwd=1, col = "white")
+legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
