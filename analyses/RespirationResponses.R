@@ -1,6 +1,6 @@
 ###################################################################
 #  Rachel Ferrill
-#  6 Jul 2015
+#  23 Jul 2015
 #  Respiration Graphs
 ####################################################################
 
@@ -8,7 +8,7 @@ setwd("~/GitHub/StarvationTraits")
 rm(list=ls())
 
 # Define Functions
-sem <- function(x){sd(x)/sqrt(3)}
+sem <- function(x){sd(na.omit(x))/sqrt(length(na.omit(x)))}
 
 # Import Data Files (Output from PreSens Respiration Analysis)
 resp1  <- read.csv("./data/Respiration/20150701_BacterialRespiration_a_RNF_Output.txt")
@@ -357,7 +357,7 @@ bp703 <-barplot(means703, las=2, ylim = c(0, 1.7*max(means703+sems703)),
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp703, y0=means703, y1=means703-sems703, angle=90, length=0.1, lwd=1)
 arrows(x0=bp703, y0=means703, y1=means703+sems703, angle=90, length=0.1, lwd=1)
-arrows(x0=bp701[1], y0=means703[1], y1=means703[1]-sems703[1], angle=90,
+arrows(x0=bp703[1], y0=means703[1], y1=means703[1]-sems703[1], angle=90,
        length=0.1, lwd=1, col = "white")
 legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 4"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
