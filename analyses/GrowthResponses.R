@@ -1,7 +1,7 @@
 ###################################################################
 #  Rachel Ferrill
 #  23 Jul 2015
-#  Respiration Graphs
+#  Growth Rate Responses
 ####################################################################
 
 setwd("~/GitHub/StarvationTraits")
@@ -53,7 +53,7 @@ C7011g_sem <- sem(C7011g$G.Rate)
 D7011g <- growth.data[10:12,]
 D7011g_mean <- mean(D7011g$G.Rate)
 D7011g_sem <- sem(D7011g$G.Rate)
-A7022g <- growth.data[13:15,] 
+A7022g <- growth.data[13:15,]
 A7022g_mean <- mean(A7022g$G.Rate)
 A7022g_sem <- sem(A7022g$G.Rate)
 B7022g <- growth.data[16:18,]
@@ -333,10 +333,10 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 1b", "Tube 3"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
 bp702g <-barplot(means702g, las=2, ylim = c(0, 1.6*max(means702g+sems702g)),
-                ylab="Growth Rate", 
-                las = 2, names.arg=c("A702", "A7022", "B7022", "C7022", "D7022", 
-                                     "A7025", "B7025", "C7025", "D7025", "A7026", 
-                                     "B7026", "C7026", "D7026"), 
+                ylab="Growth Rate",
+                las = 2, names.arg=c("A702", "A7022", "B7022", "C7022", "D7022",
+                                     "A7025", "B7025", "C7025", "D7025", "A7026",
+                                     "B7026", "C7026", "D7026"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp702g, y0=means702g, y1=means702g-sems702g, angle=90, length=0.1, lwd=1)
@@ -348,10 +348,10 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
 
 
 bp703g <-barplot(means703g, las=2, ylim = c(0, 1.7*max(means703g+sems703g)),
-                ylab="Growth Rate", 
-                las = 2, names.arg=c("A703", "A7031", "B7031", "C7031", "D7031", 
-                                     "A7032", "B7032", "C7032", "D7032", "A7034", 
-                                     "B7034", "C7034", "D7034"), 
+                ylab="Growth Rate",
+                las = 2, names.arg=c("A703", "A7031", "B7031", "C7031", "D7031",
+                                     "A7032", "B7032", "C7032", "D7032", "A7034",
+                                     "B7034", "C7034", "D7034"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp703g, y0=means703g, y1=means703g-sems703g, angle=90, length=0.1, lwd=1)
@@ -362,10 +362,10 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 4"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
 bp710g <-barplot(means710g, las=2, ylim = c(0, 1.55*max(means710g+sems710g)),
-                ylab="Growth Rate", 
-                las = 2, names.arg=c("A710", "A7101", "B7101", "C7101", "D7101", 
-                                     "A7102", "B7102", "C7102", "D7102", "A7103", 
-                                     "B7103", "C7103", "D7103"), 
+                ylab="Growth Rate",
+                las = 2, names.arg=c("A710", "A7101", "B7101", "C7101", "D7101",
+                                     "A7102", "B7102", "C7102", "D7102", "A7103",
+                                     "B7103", "C7103", "D7103"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp710g, y0=means710g, y1=means710g-sems710g, angle=90, length=0.1, lwd=1)
@@ -376,10 +376,10 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
 bp723g <-barplot(means723g, las=2, ylim = c(0, 1.65*max(means723g+sems723g)),
-                ylab="Growth Rate", 
-                las = 2, names.arg=c("A723", "A7231", "B7231", "C7231", "D7231", 
-                                     "A7232", "B7232", "C7232", "D7232", "A7233", 
-                                     "B7233", "C7233", "D7233"), 
+                ylab="Growth Rate",
+                las = 2, names.arg=c("A723", "A7231", "B7231", "C7231", "D7231",
+                                     "A7232", "B7232", "C7232", "D7232", "A7233",
+                                     "B7233", "C7233", "D7233"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp723g, y0=means723g, y1=means723g-sems723g, angle=90, length=0.1, lwd=1)
@@ -390,10 +390,10 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
 bp724g <-barplot(means724g, las=2, ylim = c(0, 1.2*max(means724g+sems724g)),
-                ylab="Growth Rate", 
-                las = 2, names.arg=c("A724", "A7241", "B7241", "C7241", "D7241", 
-                                     "A7242", "B7242", "C7242", "D7242", "A7243", 
-                                     "B7243", "C7243", "D7243"), 
+                ylab="Growth Rate",
+                las = 2, names.arg=c("A724", "A7241", "B7241", "C7241", "D7241",
+                                     "A7242", "B7242", "C7242", "D7242", "A7243",
+                                     "B7243", "C7243", "D7243"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp724g, y0=means724g, y1=means724g-sems724g, angle=90, length=0.1, lwd=1)
