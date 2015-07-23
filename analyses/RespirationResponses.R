@@ -1,6 +1,6 @@
 ###################################################################
 #  Rachel Ferrill
-#  6 Jul 2015
+#  23 Jul 2015
 #  Respiration Graphs
 ####################################################################
 
@@ -8,7 +8,7 @@ setwd("~/GitHub/StarvationTraits")
 rm(list=ls())
 
 # Define Functions
-sem <- function(x){sd(x)/sqrt(3)}
+sem <- function(x){sd(na.omit(x))/sqrt(length(na.omit(x)))}
 
 # Import Data Files (Output from PreSens Respiration Analysis)
 resp1  <- read.csv("./data/Respiration/20150701_BacterialRespiration_a_RNF_Output.txt")
@@ -330,10 +330,10 @@ arrows(x0=bp701, y0=means701, y1=means701-sems701, angle=90, length=0.1, lwd=1)
 arrows(x0=bp701, y0=means701, y1=means701+sems701, angle=90, length=0.1, lwd=1)
 arrows(x0=bp701[1], y0=means701[1], y1=means701[1]-sems701[1], angle=90,
        length=0.1, lwd=1, col = "white")
-legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+legend("topright", legend = c("Ancestor", "Tube 1", "Tube 1b", "Tube 3"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
-bp702 <-barplot(means702, las=2, ylim = c(0, 1.2*max(means702+sems702)),
+bp702 <-barplot(means702, las=2, ylim = c(0, 1.6*max(means702+sems702)),
                 ylab=expression(paste("Respiration (",mu,"M O"^2," Hr"^-1,")")), 
                 las = 2, names.arg=c("A702", "A7022", "B7022", "C7022", "D7022", 
                                      "A7025", "B7025", "C7025", "D7025", "A7026", 
@@ -348,7 +348,7 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
 
-bp703 <-barplot(means703, las=2, ylim = c(0, 1.2*max(means703+sems703)),
+bp703 <-barplot(means703, las=2, ylim = c(0, 1.7*max(means703+sems703)),
                 ylab=expression(paste("Respiration (",mu,"M O"^2," Hr"^-1,")")), 
                 las = 2, names.arg=c("A703", "A7031", "B7031", "C7031", "D7031", 
                                      "A7032", "B7032", "C7032", "D7032", "A7034", 
@@ -357,12 +357,12 @@ bp703 <-barplot(means703, las=2, ylim = c(0, 1.2*max(means703+sems703)),
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp703, y0=means703, y1=means703-sems703, angle=90, length=0.1, lwd=1)
 arrows(x0=bp703, y0=means703, y1=means703+sems703, angle=90, length=0.1, lwd=1)
-arrows(x0=bp701[1], y0=means703[1], y1=means703[1]-sems703[1], angle=90,
+arrows(x0=bp703[1], y0=means703[1], y1=means703[1]-sems703[1], angle=90,
        length=0.1, lwd=1, col = "white")
-legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 4"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
-bp710 <-barplot(means710, las=2, ylim = c(0, 1.2*max(means710+sems710)),
+bp710 <-barplot(means710, las=2, ylim = c(0, 1.55*max(means710+sems710)),
                 ylab=expression(paste("Respiration (",mu,"M O"^2," Hr"^-1,")")), 
                 las = 2, names.arg=c("A710", "A7101", "B7101", "C7101", "D7101", 
                                      "A7102", "B7102", "C7102", "D7102", "A7103", 
@@ -376,7 +376,7 @@ arrows(x0=bp710[1], y0=means710[1], y1=means710[1]-sems710[1], angle=90,
 legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
-bp723 <-barplot(means723, las=2, ylim = c(0, 1.2*max(means723+sems723)),
+bp723 <-barplot(means723, las=2, ylim = c(0, 1.65*max(means723+sems723)),
                 ylab=expression(paste("Respiration (",mu,"M O"^2," Hr"^-1,")")), 
                 las = 2, names.arg=c("A723", "A7231", "B7231", "C7231", "D7231", 
                                      "A7232", "B7232", "C7232", "D7232", "A7233", 
