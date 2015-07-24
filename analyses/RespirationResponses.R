@@ -186,7 +186,38 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
 
 
 # Statistics
+
+# Required Package
+install.packages("reshape")
+require (reshape)
+
+
 m.701 <- melt(kbs701[,c(1:4, 9:11)])
 fit.701 <- aov(value ~ Evol + Tube + ID, data = m.701)
 summary(fit.701)
 TukeyHSD(fit.701)
+
+m.702 <- melt(kbs702[,c(1:4, 9:11)])
+fit.702 <- aov(value ~ Evol + Tube + ID, data = m.702)
+summary(fit.702)
+TukeyHSD(fit.702)
+
+m.703 <- melt(kbs703[,c(1:4, 9:11)])
+fit.703 <- aov(value ~ Evol + Tube + ID, data = m.703)
+summary(fit.703)
+TukeyHSD(fit.703)
+
+m.710 <- melt(kbs710[,c(1:4, 9:11)])
+fit.710 <- aov(value ~ Evol + Tube + ID, data = m.710)
+summary(fit.710)
+TukeyHSD(fit.710)
+
+m.723 <- melt(kbs723[,c(1:4, 9:11)])
+fit.723 <- aov(value ~ Evol + Tube + ID, data = m.723)
+summary(fit.723)
+TukeyHSD(fit.723)
+
+m.724 <- melt(kbs724[,c(1:4, 9:11)])
+fit.724 <- aov(value ~ Evol + Tube + ID, data = m.724)
+summary(fit.724)
+TukeyHSD(fit.724)
