@@ -320,9 +320,9 @@ par(mar=c(6, 5, 1, 1) + 0.1)
 # Plot Respiration Responses by Organism
 bp701g <-barplot(means701g, las=2, ylim = c(0, 1.2*max(means701g+sems701g)),
                 ylab="Growth Rate",
-                las = 2, names.arg=c("A701", "A7011", "B7011", "C7011", "D7011",
-                                     "A7011b", "B7011b", "C7011b", "D7011b", "A7013", "B7013",
-                                     "C7013", "D7013"),
+                las = 2, names.arg=c("701", "7011A", "7011B", "7011C", "7011D",
+                                     "7011bA", "7011bB", "7011bC", "7011bD", "7013A", "7013B",
+                                     "7013C", "7013D"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp701g, y0=means701g, y1=means701g-sems701g, angle=90, length=0.1, lwd=1)
@@ -334,9 +334,9 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 1b", "Tube 3"),
 
 bp702g <-barplot(means702g, las=2, ylim = c(0, 1.6*max(means702g+sems702g)),
                 ylab="Growth Rate",
-                las = 2, names.arg=c("A702", "A7022", "B7022", "C7022", "D7022",
-                                     "A7025", "B7025", "C7025", "D7025", "A7026",
-                                     "B7026", "C7026", "D7026"),
+                las = 2, names.arg=c("702", "7022A", "7022B", "7022C", "7022D",
+                                     "7025A", "7025B", "7025C", "7025D", "7026A",
+                                     "7026B", "7026C", "7026D"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp702g, y0=means702g, y1=means702g-sems702g, angle=90, length=0.1, lwd=1)
@@ -349,9 +349,9 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
 
 bp703g <-barplot(means703g, las=2, ylim = c(0, 1.7*max(means703g+sems703g)),
                 ylab="Growth Rate",
-                las = 2, names.arg=c("A703", "A7031", "B7031", "C7031", "D7031",
-                                     "A7032", "B7032", "C7032", "D7032", "A7034",
-                                     "B7034", "C7034", "D7034"),
+                las = 2, names.arg=c("703", "7031A", "7031B", "7031C", "7031D",
+                                     "7032A", "7032B", "7032C", "7032D", "7034A",
+                                     "7034B", "7034C", "7034D"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp703g, y0=means703g, y1=means703g-sems703g, angle=90, length=0.1, lwd=1)
@@ -363,9 +363,9 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 4"),
 
 bp710g <-barplot(means710g, las=2, ylim = c(0, 1.55*max(means710g+sems710g)),
                 ylab="Growth Rate",
-                las = 2, names.arg=c("A710", "A7101", "B7101", "C7101", "D7101",
-                                     "A7102", "B7102", "C7102", "D7102", "A7103",
-                                     "B7103", "C7103", "D7103"),
+                las = 2, names.arg=c("710", "7101A", "7101B", "7101C", "7101D",
+                                     "7102A", "7102B", "7102C", "7102D", "7103A",
+                                     "7103B", "7103C", "7103D"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp710g, y0=means710g, y1=means710g-sems710g, angle=90, length=0.1, lwd=1)
@@ -377,9 +377,9 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
 
 bp723g <-barplot(means723g, las=2, ylim = c(0, 1.65*max(means723g+sems723g)),
                 ylab="Growth Rate",
-                las = 2, names.arg=c("A723", "A7231", "B7231", "C7231", "D7231",
-                                     "A7232", "B7232", "C7232", "D7232", "A7233",
-                                     "B7233", "C7233", "D7233"),
+                las = 2, names.arg=c("723", "7231A", "7231B", "7231C", "7231D",
+                                     "7232A", "7232B", "7232C", "7232D", "7233A",
+                                     "7233B", "7233C", "7233D"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp723g, y0=means723g, y1=means723g-sems723g, angle=90, length=0.1, lwd=1)
@@ -391,9 +391,9 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
 
 bp724g <-barplot(means724g, las=2, ylim = c(0, 1.2*max(means724g+sems724g)),
                 ylab="Growth Rate",
-                las = 2, names.arg=c("A724", "A7241", "B7241", "C7241", "D7241",
-                                     "A7242", "B7242", "C7242", "D7242", "A7243",
-                                     "B7243", "C7243", "D7243"),
+                las = 2, names.arg=c("724", "7241A", "7241B", "7241C", "7241D",
+                                     "7242A", "7242B", "7242C", "7242D", "7243A",
+                                     "7243B", "7243C", "7243D"),
                 col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp724g, y0=means724g, y1=means724g-sems724g, angle=90, length=0.1, lwd=1)
