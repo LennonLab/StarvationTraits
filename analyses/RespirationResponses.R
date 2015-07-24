@@ -42,8 +42,8 @@ counts <- read.csv("./data/Respiration/RespirationCounts.txt", header=T)
 counts$conc <- counts$NumColonies * 10^(-counts$plate) * 10
 
 # Create Data Frame
-resp <- as.data.frame(matrix(NA, dim(counts)[1],12))
-colnames(resp) <- c("ID", "Organism", "Evol", "Conc", "Rep1_raw", "Rep2_raw",
+resp <- as.data.frame(matrix(NA, dim(counts)[1],13))
+colnames(resp) <- c("ID", "Organism", "Evol", "Tube", "Conc", "Rep1_raw", "Rep2_raw",
                          "Rep3_raw", "Rep1_cor", "Rep2_cor", "Rep3_cor",
                          "Resp_avg", "Resp_sem")
 resp$ID <- counts$ID
@@ -53,8 +53,10 @@ for (i in 1:dim(resp)[1]){
   resp$Organism[i] <- regmatches(resp$ID[i], gregexpr(".{3}", resp$ID[i]))[[1]][1]
   if (nchar(as.character(resp$ID[i])) == 3) {
     resp$Evol[i] <- "Ancestor"
+    resp$Tube[i] <- "Ancestor"
   }else{
     resp$Evol[i] <- "Derived"
+    resp$Tube[i] <- sub("^...(.).*", "\\1", resp$ID[i])[[1]][1]
     }
 }
 
@@ -78,8 +80,8 @@ resp$Rep2_cor <- resp$Rep2_raw / resp$Conc
 resp$Rep3_cor <- resp$Rep3_raw / resp$Conc
 
 # Calculate Average and SEM
-resp$Resp_avg <- round(apply(resp[,8:10], 1, mean), 3)
-resp$Resp_sem <- round(apply(resp[,8:10], 1, sem), 3)
+resp$Resp_avg <- round(apply(resp[,9:11], 1, mean), 3)
+resp$Resp_sem <- round(apply(resp[,9:11], 1, sem), 3)
 
 
 kbs701 <- resp[resp$Organism == "701",]
@@ -205,3 +207,7 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
 
 
 # Statistics
+m.701 <- melt(kbs701[,c(1:4, 9:11)])
+fit.701 <- aov(value ~ Evol + Tube + ID, data = m.701)
+summary(fit.701)
+TukeyHSD(fit.701)
