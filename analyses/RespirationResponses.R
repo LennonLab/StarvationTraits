@@ -7,6 +7,9 @@
 setwd("~/GitHub/StarvationTraits")
 rm(list=ls())
 
+# Required Package
+require (reshape)
+
 # Define Functions
 sem <- function(x){sd(na.omit(x))/sqrt(length(na.omit(x)))}
 
@@ -54,10 +57,14 @@ for (i in 1:dim(resp)[1]){
   if (nchar(as.character(resp$ID[i])) == 3) {
     resp$Evol[i] <- "Ancestor"
     resp$Tube[i] <- "Ancestor"
-  }else{
-    resp$Evol[i] <- "Derived"
-    resp$Tube[i] <- sub("^...(.).*", "\\1", resp$ID[i])[[1]][1]
-    }
+  }else {
+    if (nchar(as.character(resp$ID[i])) == 5) {
+      resp$Evol[i] <- "Derived"
+      resp$Tube[i] <- sub("^...(.).*", "\\1", resp$ID[i])[[1]][1]
+    } else {
+      resp$Evol[i] <- "Derived"
+      resp$Tube[i] <- sub("^...(..).*", "\\1", resp$ID[i])[[1]][1]
+      }}
 }
 
 for (i in 1:dim(resp)[1]){
@@ -186,12 +193,6 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
 
 
 # Statistics
-
-# Required Package
-install.packages("reshape")
-require (reshape)
-
-
 m.701 <- melt(kbs701[,c(1:4, 9:11)])
 fit.701 <- aov(value ~ Evol + Tube + ID, data = m.701)
 summary(fit.701)
