@@ -90,6 +90,8 @@ resp$Rep3_cor <- resp$Rep3_raw / resp$Conc
 resp$Resp_avg <- round(apply(resp[,9:11], 1, mean), 3)
 resp$Resp_sem <- round(apply(resp[,9:11], 1, sem), 3)
 
+resp <- resp[-c(2:5), ]
+
 
 kbs701 <- resp[resp$Organism == "701",]
 kbs702 <- resp[resp$Organism == "702",]
@@ -105,21 +107,20 @@ par(mar=c(6, 5, 1, 1) + 0.1)
 
 # Plot Respiration Responses by Organism
 bp701 <-barplot(kbs701$Resp_avg, las=2, ylim = c(0, 1.2*max(kbs701$Resp_avg+kbs701$Resp_sem)),
-                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1,")")),
-                las = 2, names.arg=c("701", "7011A", "7011B", "7011C", "7011D",
-                "7011bA", "7011bB", "7011bC", "7011bD", "7013A", "7013B",
-                "7013C", "7013D"),
-                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
+                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1," per cell)")),
+                las = 2, names.arg=c("701", "7011bA", "7011bB", "7011bC", "7011bD", "7013A", 
+                                     "7013B", "7013C", "7013D"),
+                col = c("black", rep("gray48", 4), rep("gray98", 4)))
 mtext("Isolate", side=1, line = 4.5)
 arrows(x0=bp701, y0=kbs701$Resp_avg, y1=kbs701$Resp_avg-kbs701$Resp_sem, angle=90, length=0.1, lwd=1)
 arrows(x0=bp701, y0=kbs701$Resp_avg, y1=kbs701$Resp_avg+kbs701$Resp_sem, angle=90, length=0.1, lwd=1)
 arrows(x0=bp701[1], y0=kbs701$Resp_avg[1], y1=kbs701$Resp_avg[1]-kbs701$Resp_sem[1], angle=90,
        length=0.1, lwd=1, col = "white")
-legend("topright", legend = c("Ancestor", "Tube 1", "Tube 1b", "Tube 3"),
-       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
+legend("topright", legend = c("Ancestor", "Tube 1b", "Tube 3"),
+       fill=c("Black", "gray48", "gray98"), bty="n")
 
 bp702 <-barplot(kbs702$Resp_avg, las=2, ylim = c(0, 1.6*max(kbs702$Resp_avg+kbs702$Resp_sem)),
-                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1,")")),
+                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1," per cell)")),
                 las = 2, names.arg=c("702", "7022A", "7022B", "7022C", "7022D",
                                      "7025A", "7025B", "7025C", "7025D", "7026A",
                                      "7026B", "7026C", "7026D"),
@@ -134,7 +135,7 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
 
 
 bp703 <-barplot(kbs703$Resp_avg, las=2, ylim = c(0, 1.7*max(kbs703$Resp_avg+kbs703$Resp_sem)),
-                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1,")")),
+                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1," per cell)")),
                 las = 2, names.arg=c("703", "7031A", "7031B", "7031C", "7031D",
                                      "7032A", "7032B", "7032C", "7032D", "7034A",
                                      "7034B", "7034C", "7034D"),
@@ -148,7 +149,7 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 4"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
 bp710 <-barplot(kbs710$Resp_avg, las=2, ylim = c(0, 1.55*max(kbs710$Resp_avg+kbs710$Resp_sem)),
-                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1,")")),
+                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1," per cell)")),
                 las = 2, names.arg=c("710", "7101A", "7101B", "7101C", "7101D",
                                      "7102A", "7102B", "7102C", "7102D", "7103A",
                                      "7103B", "7103C", "7103D"),
@@ -162,7 +163,7 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
 bp723 <-barplot(kbs723$Resp_avg, las=2, ylim = c(0, 1.65*max(kbs723$Resp_avg+kbs723$Resp_sem)),
-                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1,")")),
+                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1," per cell)")),
                 las = 2, names.arg=c("723", "7231A", "7231B", "7231C", "7231D",
                                      "7232A", "7232B", "7232C", "7232D", "7233A",
                                      "7233B", "7233C", "7233D"),
@@ -176,7 +177,7 @@ legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
        fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
 bp724 <-barplot(kbs724$Resp_avg, las=2, ylim = c(0, 1.2*max(kbs724$Resp_avg+kbs724$Resp_sem)),
-                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1,")")),
+                ylab=expression(paste("Respiration (pM O"^2," Hr"^-1," per cell)")),
                 las = 2, names.arg=c("724", "7241A", "7241B", "7241C", "7241D",
                                      "7242A", "7242B", "7242C", "7242D", "7243A",
                                      "7243B", "7243C", "7243D"),
