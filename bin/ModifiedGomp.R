@@ -46,15 +46,18 @@ growth.modGomp <- function(input=" ", output=" ", intercept.guess=0.1,
   write.table(as.matrix(t(titles)), file=outfile, append=T, row.names=F,
               col.names=F, sep=",", quote=FALSE)
 
-  for(i in 3:dim(data.in)[2]){
+  for(i in 1:length(samples)){
   # Print Operation Status
-    print(paste(round(((i-2)/(dim(data.in)[2]-2)*100),2),"% complete",
+    print(paste(round(((i)/length(samples)*100),2),"% complete",
                 sep = ""), quote=F)
 
   # Extract Data
     t <- data.in$Time
-    s <- data.in[,i]
-    if (max(s) - min(s) < 0.1) next
+    s <- data.in[,i + 2]
+    if (max(s) - min(s) < 0.1) {
+      print(paste("Sample well", samples[i], "has inefficient change in OD"))
+      next
+      }
     else realdata <- data.frame(t,s)
 
   # Smoothing Function
@@ -76,7 +79,7 @@ growth.modGomp <- function(input=" ", output=" ", intercept.guess=0.1,
     fit1 <- grid.mle2(minuslogl = s.trim~dnorm(mean = m.gomp(t.trim,
                       c(b0, A, umax, L)), sd=exp(z)),grids=grids1,
                       start=start1,data=tmpdata,method="BFGS")
-    print("finished fit")
+    print(paste("finished fit for well", samples[i]))
 
 	# isolate best of each class of model
     best.f1<-fit1$res.mod[[which(fit1$res.mat[,'AIC']==min(fit1$res.mat[,'AIC']))[1]]]
@@ -88,8 +91,8 @@ growth.modGomp <- function(input=" ", output=" ", intercept.guess=0.1,
           col='blue',lwd=2,add=T)
 
   # generate plot of model fits (saved)
-    pdf(file=paste("./data/GrowthCurves/output/", output, colnames(data.in[i]),".pdf",sep=""))
-    plot(s ~ t, main=colnames(data.in[i]),
+    pdf(file=paste("./data/GrowthCurves/output/", output, samples[i],".pdf",sep=""))
+    plot(s ~ t, main=samples[i],
          ylab="ABS", xlab="Time", pch=19, data=realdata)
     curve(m.gomp(x,coef(best.f1)[1:4]),0,max(tmpdata$t.trim),
           col='blue',lwd=2,add=T)
@@ -109,7 +112,7 @@ growth.modGomp <- function(input=" ", output=" ", intercept.guess=0.1,
 
     # Save coefficients of model
     cfs<-coef(best.f1)
-    results$Curve[i] <- colnames(data.in)[i]
+    results$Curve[i] <- samples[i]
     results$b0[i]    <- round(cfs['b0'], 4)
     results$A[i]     <- round(cfs['A'], 4)
     results$umax[i]  <- round(cfs['umax'], 4)

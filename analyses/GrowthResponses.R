@@ -84,97 +84,102 @@ kbs710 <- growth[growth$Organism == "710",]
 kbs723 <- growth[growth$Organism == "723",]
 kbs724 <- growth[growth$Organism == "724",]
 
+# Remove Some Replicates Due to Issues
+kbs723 <- kbs723[kbs723$ID != "7231C", ]
+kbs710 <- kbs710[kbs710$ID != "7102B", ]
+kbs701 <- kbs701[kbs701$ID != "7011bB", ]
 
 # Set Default Plot Parameters
 par(mar=c(6, 5, 1, 1) + 0.1)
 
 # Plot Respiration Responses by Organism
-bp701g <-barplot(kbs701$G.Avg, las=2, ylim = c(0, 1.2*max(kbs701$G.Avg+kbs701$G.SEM)),
-                ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
-                las = 2, names.arg=c("701", "7011bA", "7011bB", "7011bC", "7011bD", "7013A", 
-                                     "7013B", "7013C", "7013D"),
-                col = c("black", rep("gray48", 4), rep("gray98", 4)))
-mtext("Isolate", side=1, line = 4.5, cex = 1.2)
-arrows(x0=bp701g, y0=kbs701$G.Avg, y1=kbs701$G.Avg-kbs701$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp701g, y0=kbs701$G.Avg, y1=kbs701$G.Avg+kbs701$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp701g[1], y0=kbs701$G.Avg[1], y1=kbs701$G.Avg[1]-kbs701$G.SEM[1], angle=90,
-       length=0.1, lwd=1, col = "white")
-legend("topright", legend = c("Ancestor",  "Tube 1b", "Tube 3"),
-       fill=c("Black", "gray48", "gray98"), bty="n")
+bp701g <- barplot(kbs701$G.Avg, las=2, ylim = c(0, 1.2*max(kbs701$G.Avg+kbs701$G.SEM)),
+                  ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
+                  las = 2, names.arg=kbs701$ID,
+                  col = c("black", rep("gray48", 4), rep("gray98", 4)))
+          mtext("Isolate", side=1, line = 4.5, cex = 1.2)
+          arrows(x0=bp701g, y0=kbs701$G.Avg, y1=kbs701$G.Avg-kbs701$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp701g, y0=kbs701$G.Avg, y1=kbs701$G.Avg+kbs701$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp701g[1], y0=kbs701$G.Avg[1], y1=kbs701$G.Avg[1]-kbs701$G.SEM[1],
+                 angle=90, length=0.1, lwd=1, col = "white")
+          legend("topright", legend = c("Ancestor",  "Tube 1b", "Tube 3"),
+                 fill=c("Black", "gray48", "gray98"), bty="n")
 
-bp702g <-barplot(kbs702$G.Avg, las=2, ylim = c(0, 1.6*max(kbs702$G.Avg+kbs702$G.SEM)),
-                ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
-                las = 2, names.arg=c("702", "7022A", "7022B", "7022C", "7022D",
-                                     "7025A", "7025B", "7025C", "7025D", "7026A",
-                                     "7026B", "7026C", "7026D"),
-                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
-mtext("Isolate", side=1, line = 4.5)
-arrows(x0=bp702g, y0=kbs702$G.Avg, y1=kbs702$G.Avg-kbs702$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp702g, y0=kbs702$G.Avg, y1=kbs702$G.Avg+kbs702$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp702g[1], y0=kbs702$G.Avg[1], y1=kbs702$G.Avg[1]-kbs702$G.SEM[1], angle=90,
-       length=0.1, lwd=1, col = "white")
-legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
-       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
-
-
-bp703g <-barplot(kbs703$G.Avg, las=2, ylim = c(0, 1.7*max(kbs703$G.Avg+kbs703$G.SEM)),
-                ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
-                las = 2, names.arg=c("703", "7031A", "7031B", "7031C", "7031D",
-                                     "7032A", "7032B", "7032C", "7032D", "7034A",
-                                     "7034B", "7034C", "7034D"),
-                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
-mtext("Isolate", side=1, line = 4.5)
-arrows(x0=bp703g, y0=kbs703$G.Avg, y1=kbs703$G.Avg-kbs703$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp703g, y0=kbs703$G.Avg, y1=kbs703$G.Avg+kbs703$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp703g[1], y0=kbs703$G.Avg[1], y1=kbs703$G.Avg[1]-kbs703$G.SEM[1], angle=90,
-       length=0.1, lwd=1, col = "white")
-legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 4"),
-       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
-
-bp710g <-barplot(kbs710$G.Avg, las=2, ylim = c(0, 1.55*max(kbs710$G.Avg+kbs710$G.SEM)),
-                ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
-                las = 2, names.arg=c("710", "7101A", "7101B", "7101C", "7101D",
-                                     "7102A", "7102B", "7102C", "7102D", "7103A",
-                                     "7103B", "7103C", "7103D"),
-                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
-mtext("Isolate", side=1, line = 4.5)
-arrows(x0=bp710g, y0=kbs710$G.Avg, y1=kbs710$G.Avg-kbs710$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp710g, y0=kbs710$G.Avg, y1=kbs710$G.Avg+kbs710$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp710g[1], y0=kbs710$G.Avg[1], y1=kbs710$G.Avg[1]-kbs710$G.SEM[1], angle=90,
-       length=0.1, lwd=1, col = "white")
-legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
-       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
-
-bp723g <-barplot(kbs723$G.Avg, las=2, ylim = c(0, 1.65*max(kbs723$G.Avg+kbs723$G.SEM)),
-                ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
-                las = 2, names.arg=c("723", "7231A", "7231B", "7231C", "7231D",
-                                     "7232A", "7232B", "7232C", "7232D", "7233A",
-                                     "7233B", "7233C", "7233D"),
-                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
-mtext("Isolate", side=1, line = 4.5)
-arrows(x0=bp723g, y0=kbs723$G.Avg, y1=kbs723$G.Avg-kbs723$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp723g, y0=kbs723$G.Avg, y1=kbs723$G.Avg+kbs723$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp723g[1], y0=kbs723$G.Avg[1], y1=kbs723$G.Avg[1]-kbs723$G.SEM[1], angle=90,
-       length=0.1, lwd=1, col = "white")
-legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
-       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
-
-bp724g <-barplot(kbs724$G.Avg, las=2, ylim = c(0, 1.2*max(kbs724$G.Avg+kbs724$G.SEM)),
-                ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
-                las = 2, names.arg=c("724", "7241A", "7241B", "7241C", "7241D",
-                                     "7242A", "7242B", "7242C", "7242D", "7243A",
-                                     "7243B", "7243C", "7243D"),
-                col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
-mtext("Isolate", side=1, line = 4.5)
-arrows(x0=bp724g, y0=kbs724$G.Avg, y1=kbs724$G.Avg-kbs724$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp724g, y0=kbs724$G.Avg, y1=kbs724$G.Avg+kbs724$G.SEM, angle=90, length=0.1, lwd=1)
-arrows(x0=bp724g[1], y0=kbs724$G.Avg[1], y1=kbs724$G.Avg[1]-kbs724$G.SEM[1], angle=90,
-       length=0.1, lwd=1, col = "white")
-legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
-       fill=c("Black", "gray48", "gray73","gray98"), bty="n")
+bp702g <- barplot(kbs702$G.Avg, las=2, ylim = c(0, 1.6*max(kbs702$G.Avg+kbs702$G.SEM)),
+                  ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
+                  las = 2, names.arg=kbs702$ID,
+                  col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
+          mtext("Isolate", side=1, line = 4.5)
+          arrows(x0=bp702g, y0=kbs702$G.Avg, y1=kbs702$G.Avg-kbs702$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp702g, y0=kbs702$G.Avg, y1=kbs702$G.Avg+kbs702$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp702g[1], y0=kbs702$G.Avg[1], y1=kbs702$G.Avg[1]-kbs702$G.SEM[1],
+                 angle=90, length=0.1, lwd=1, col = "white")
+          legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+                 fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
 
+bp703g <- barplot(kbs703$G.Avg, las=2, ylim = c(0, 1.7*max(kbs703$G.Avg+kbs703$G.SEM)),
+                  ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
+                  las = 2, names.arg=kbs703$ID,
+                  col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
+          mtext("Isolate", side=1, line = 4.5)
+          arrows(x0=bp703g, y0=kbs703$G.Avg, y1=kbs703$G.Avg-kbs703$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp703g, y0=kbs703$G.Avg, y1=kbs703$G.Avg+kbs703$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp703g[1], y0=kbs703$G.Avg[1], y1=kbs703$G.Avg[1]-kbs703$G.SEM[1],
+                 angle=90, length=0.1, lwd=1, col = "white")
+          legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 4"),
+                 fill=c("Black", "gray48", "gray73","gray98"), bty="n")
 
+bp710g <- barplot(kbs710$G.Avg, las=2, ylim = c(0, 1.55*max(kbs710$G.Avg+kbs710$G.SEM)),
+                  ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
+                  las = 2, names.arg=kbs710$ID,
+                  col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
+          mtext("Isolate", side=1, line = 4.5)
+          arrows(x0=bp710g, y0=kbs710$G.Avg, y1=kbs710$G.Avg-kbs710$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp710g, y0=kbs710$G.Avg, y1=kbs710$G.Avg+kbs710$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp710g[1], y0=kbs710$G.Avg[1], y1=kbs710$G.Avg[1]-kbs710$G.SEM[1],
+                         angle=90,length=0.1, lwd=1, col = "white")
+          legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+                 fill=c("Black", "gray48", "gray73","gray98"), bty="n")
+
+bp723g <- barplot(kbs723$G.Avg, las=2, ylim = c(0, 1.65*max(kbs723$G.Avg+kbs723$G.SEM)),
+                  ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
+                  las = 2, names.arg=kbs723$ID,
+                  col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
+          mtext("Isolate", side=1, line = 4.5)
+          arrows(x0=bp723g, y0=kbs723$G.Avg, y1=kbs723$G.Avg-kbs723$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp723g, y0=kbs723$G.Avg, y1=kbs723$G.Avg+kbs723$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp723g[1], y0=kbs723$G.Avg[1], y1=kbs723$G.Avg[1]-kbs723$G.SEM[1],
+                 angle=90, length=0.1, lwd=1, col = "white")
+          legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+                 fill=c("Black", "gray48", "gray73","gray98"), bty="n")
+
+bp724g <- barplot(kbs724$G.Avg, las=2, ylim = c(0, 1.2*max(kbs724$G.Avg+kbs724$G.SEM)),
+                  ylab=expression(paste(mu, "max (day"^-1, ")")), cex.lab= 1.5,
+                  las = 2, names.arg=kbs724$ID,
+                  col = c("black", rep("gray48", 4), rep("gray73", 4), rep("gray98", 4)))
+          mtext("Isolate", side=1, line = 4.5)
+          arrows(x0=bp724g, y0=kbs724$G.Avg, y1=kbs724$G.Avg-kbs724$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp724g, y0=kbs724$G.Avg, y1=kbs724$G.Avg+kbs724$G.SEM,
+                 angle=90, length=0.1, lwd=1)
+          arrows(x0=bp724g[1], y0=kbs724$G.Avg[1], y1=kbs724$G.Avg[1] - kbs724$G.SEM[1],
+                 angle=90, length=0.1, lwd=1, col = "white")
+          legend("topright", legend = c("Ancestor", "Tube 1", "Tube 2", "Tube 3"),
+                 fill=c("Black", "gray48", "gray73","gray98"), bty="n")
+
+
+################################################################################
 # Statistics
 m.701 <- melt(kbs701[,1:7])
 fit.701 <- aov(value ~ Evol + Tube + ID, data = m.701)
@@ -210,9 +215,8 @@ fit.724 <- aov(value ~ Evol + Tube + ID, data = m.724)
 summary(fit.724)
 TukeyHSD(fit.724)
 
-install.packages("lme4")
 require (lme4)
-install.packages("nlme")
+
 require(nlme)
 
 fit.702 <- aov(value ~ Evol + Tube + ID, data = m.702)
