@@ -54,7 +54,10 @@ growth.modGomp <- function(input=" ", output=" ", intercept.guess=0.1,
   # Extract Data
     t <- data.in$Time
     s <- data.in[,i]
-    if (max(s) - min(s) < 0.1) next
+    if (max(s) - min(s) < 0.1) {
+      print(paste("Sample well", i, "has inefficient change in OD"))
+      next
+      }
     else realdata <- data.frame(t,s)
 
   # Smoothing Function
