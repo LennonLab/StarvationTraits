@@ -49,7 +49,7 @@ The CPM for this voucher was ~2,300,000 cpm.
 
 ## 2) Trap Efficiency
 
-```{r}
+```{r, results='hide'}
 # Import Data
 trap.data <- read.csv("../notes/20150921_BRBP.csv", header=T)
 
@@ -64,13 +64,36 @@ voucher <- trap.data[trap.data$Sample == "Voucher" & trap.data$Time == "1", 3]
 in1.c <- in1 * 5 # used 100ul of 500ul
 out1.c <- out1 * 50 # used 100ul of 5000ul
 
-# Calculate mean and sem
-intra.test.means <- c("Expected" = voucher, "Trap" = mean(in1.c), "Residual" = mean(out1.c))
-intra.test.ses <- c(0, "Trap" = se(in1.c), "Residual" = se(out1.c))
+# Percent of Theoretical
+in1.p <- in1.c / voucher
+out1.p <- out1.c / voucher
 
-barplot(intra.test.means)
- 
+# Calculate mean and sem
+means <- c("Trap" = mean(in1.p), "Residual" = mean(out1.p))
+ses <- c("Trap" = se(in1.p), "Residual" = se(out1.p))
+
+# Plot
+png(filename="../figures/Recovery1.png",
+    width = 800, height = 800, res = 96*2)
+
+par(mar=c(3,5,0.5,0.5), oma=c(1,1,1,1)+0.1, lwd=2)
+bp_plot <- barplot(means, ylab = "Percent Recovery", 
+                   ylim = c(0, 1), lwd=3, yaxt="n", col="gray",
+                   cex.lab=1.5, cex.names = 1.25)
+arrows(x0 = bp_plot, y0 = means, y1 = means - ses, angle = 90,
+       length=0.1, lwd = 2)
+arrows(x0 = bp_plot, y0 = means, y1 = means + ses, angle = 90,
+       length=0.1, lwd = 2)
+axis(side = 2, labels=T, lwd.ticks=2, las=2, lwd=2)
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
 ```
 
-
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Bicarbonate Recovery"}
+library(png)
+library(grid)
+img <- readPNG("../figures/Recovery1.png")
+ grid.raster(img)
+```
 
