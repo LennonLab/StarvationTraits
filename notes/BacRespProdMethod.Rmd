@@ -1,0 +1,76 @@
+---
+title: "14C Respiration/Production Methods"
+author: "Mario Muscarella"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+header-includes:
+   - \usepackage{array}
+   - \usepackage{graphics}
+output: 
+  pdf_document:
+    fig_caption: true
+geometry: margin=2.54cm
+---
+
+```{r, echo=FALSE, results='hide'}
+rm(list=ls())
+setwd("~/GitHub/StarvationTraits/notes/")
+se <- function(x, ...){sd(x, na.rm = TRUE)/sqrt(length(na.omit(x)))}
+```
+
+# Overview
+
+The simultaneous measurement of bacterial respiration and production will give the best results for estimating growth efficiency.
+Here, we have constructed custom bacterial respiration/production vials (Fig 1).
+We will use these vials with 14C-resources.
+However, first we must optimize the methods.
+
+```{r fig.width=2, fig.height=2,echo=FALSE,fig.cap="Bacterial Respiration and Production Vial"}
+library(png)
+library(grid)
+img <- readPNG("../figures/C14Tube.png")
+ grid.raster(img)
+```
+
+# Optimizations
+
+As we start there are a few things we need to optimize.
+We are going to start by determining the efficiency of our apparatus. 
+We are doing this using 14C-Bicarbonate.
+But we need to check a few things first:
+
+1. How much Bicarbonate should we add
+2. What is the efficiency of the trap
+
+## 1) Bicarbonate
+
+I did a simple experiment where I added known volumes of the bicarbonate stock to 1500 $\mu$L of scintillation cocktail (1, 5, and 10 $\mu$L).
+Based on this I discovered that the LSC could only measure 1 $\mu$L max.
+The CPM for this voucher was ~2,300,000 cpm.
+
+## 2) Trap Efficiency
+
+```{r}
+# Import Data
+trap.data <- read.csv("../notes/20150921_BRBP.csv", header=T)
+
+# Raw Data For Intra Vial Test
+in1  <- trap.data[trap.data$Sample == "Tube1_in" & trap.data$Time == "1", 3]
+out1 <- trap.data[trap.data$Sample == "Tube1_out" & trap.data$Time == "1", 3]
+
+# Define Theoretical Value
+voucher <- trap.data[trap.data$Sample == "Voucher" & trap.data$Time == "1", 3]
+
+# Correct For Vol
+in1.c <- in1 * 5 # used 100ul of 500ul
+out1.c <- out1 * 50 # used 100ul of 5000ul
+
+# Calculate mean and sem
+intra.test.means <- c("Expected" = voucher, "Trap" = mean(in1.c), "Residual" = mean(out1.c))
+intra.test.ses <- c(0, "Trap" = se(in1.c), "Residual" = se(out1.c))
+
+barplot(intra.test.means)
+ 
+```
+
+
+
