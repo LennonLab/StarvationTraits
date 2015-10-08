@@ -1,0 +1,314 @@
+---
+title: "14C Respiration/Production Methods"
+author: "Mario Muscarella"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+header-includes:
+   - \usepackage{array}
+   - \usepackage{graphics}
+output: 
+  pdf_document:
+    fig_caption: true
+geometry: margin=2.54cm
+---
+
+```{r, echo=FALSE, results='hide'}
+rm(list=ls())
+setwd("~/GitHub/StarvationTraits/notes/")
+se <- function(x, ...){sd(x, na.rm = TRUE)/sqrt(length(na.omit(x)))}
+library(png)
+library(grid)
+```
+
+# Overview
+
+The simultaneous measurement of bacterial respiration and production will give the best results for estimating growth efficiency.
+Here, we have constructed custom bacterial respiration/production vials (Fig 1).
+We will use these vials with 14C-resources.
+However, first we must optimize the methods.
+
+```{r fig.width=2, fig.height=2,echo=FALSE,fig.cap="Bacterial Respiration and Production Vial"}
+img <- readPNG("../figures/C14Tube.png")
+ grid.raster(img)
+```
+
+# Optimizations
+
+As we start there are a few things we need to optimize.
+We are going to start by determining the efficiency of our apparatus. 
+We are doing this using 14C-Bicarbonate.
+But we need to check a few things first:
+
+1. How much Bicarbonate should we add
+2. What is the efficiency of the trap
+
+## 1) Bicarbonate
+
+I did a simple experiment where I added known volumes of the bicarbonate stock to 1500 $\mu$L of scintillation cocktail (1, 5, and 10 $\mu$L).
+Based on this I discovered that the LSC could only measure 1 $\mu$L max.
+The CPM for this voucher was ~2,300,000 cpm.
+
+## 2) Trap Efficiency
+
+```{r, results='hide'}
+# Import Data
+trap.data <- read.csv("../notes/20150921_BRBP.csv", header=T)
+
+# Raw Data For Intra Vial Test
+in1  <- trap.data[trap.data$Sample == "Tube1_in" & trap.data$Time == "1", 3]
+out1 <- trap.data[trap.data$Sample == "Tube1_out" & trap.data$Time == "1", 3]
+
+# Define Theoretical Value
+voucher <- trap.data[trap.data$Sample == "Voucher" & trap.data$Time == "1", 3]
+
+# Correct For Vol
+in1.c <- in1 * 5 # used 100ul of 500ul
+out1.c <- out1 * 50 # used 100ul of 5000ul
+
+# Percent of Theoretical
+in1.p <- in1.c / voucher
+out1.p <- out1.c / voucher
+
+# Calculate mean and sem
+means <- c("Trap" = mean(in1.p), "Residual" = mean(out1.p))
+ses <- c("Trap" = se(in1.p), "Residual" = se(out1.p))
+
+# Plot
+png(filename="../figures/Recovery1.png",
+    width = 800, height = 800, res = 96*2)
+
+par(mar=c(3,5,0.5,0.5), oma=c(1,1,1,1)+0.1, lwd=2)
+bp_plot <- barplot(means, ylab = "Percent Recovery", 
+                   ylim = c(0, 1), lwd=3, yaxt="n", col="gray",
+                   cex.lab=1.5, cex.names = 1.25)
+arrows(x0 = bp_plot, y0 = means, y1 = means - ses, angle = 90,
+       length=0.1, lwd = 2)
+arrows(x0 = bp_plot, y0 = means, y1 = means + ses, angle = 90,
+       length=0.1, lwd = 2)
+axis(side = 2, labels=T, lwd.ticks=2, las=2, lwd=2)
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+```
+
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Bicarbonate Recovery"}
+img <- readPNG("../figures/Recovery1.png")
+ grid.raster(img)
+```
+
+## 3) Alkaline Solution Experiment
+One thing that we need to test is if if matters what alkaline solution we use (NaOH or KOH) and at what concentration. 
+So we are going to do a simple experiment to test this.
+I filled 21 BP vials with 1500 $\mu$L scintillation cocktail.
+I then added 100 $\mu$L of either NaOH or KOH at either 5N, 1N, or 0.1N.
+I then added 1 $\mu$L of 14C-Bicarbonate.
+I analyzed on the LSC immediately.
+
+```{r}
+# Import Data
+alk.data <- read.csv("../notes/20150924_AlkalineExp.csv", header=T)
+alk.data$Group <- sapply(strsplit(as.character(alk.data$Sample), "OH"), "[[", 1)
+
+pairwise.t.test(alk.data$CPM, alk.data$Group, p.adjust.method="BH")
+alk.model <- lm(alk.data$CPM ~ alk.data$Group + alk.data$Sample)
+
+# Group Differences
+round(TukeyHSD(aov(alk.model))$'alk.data$Group', 4)
+
+# Make Dateframe for Plotting
+alk.data.plot <- as.data.frame(matrix(NA, length(levels(alk.data$Sample)), 5))
+colnames(alk.data.plot) <- c("Sample", "Group", "Normality", "mean", "sem")
+alk.data.plot$Sample <- rev(levels(alk.data$Sample))
+alk.data.plot$Group <- sapply(strsplit(alk.data.plot$Sample, "OH"), "[[", 1)
+alk.data.plot$Group[2:7] <- paste(alk.data.plot$Group[2:7], "OH", sep="")
+alk.data.plot$Normality[2:7] <- sapply(strsplit(alk.data.plot$Sample[2:7], "OH"), "[[", 2)
+
+for (i in alk.data.plot$Sample){
+  alk.data.plot$mean[alk.data.plot$Sample == i] <- mean(alk.data$CPM[alk.data$Sample == i])
+}
+
+for (i in alk.data.plot$Sample){
+  alk.data.plot$sem[alk.data.plot$Sample == i] <- se(alk.data$CPM[alk.data$Sample == i])
+}
+
+# Plot
+png(filename="../figures/Alkalinity.png",
+    width = 1600, height = 1200, res = 96*2)
+
+par(mar=c(4,5,0.5,0.5), oma=c(1,1,1,1)+0.1, lwd=2)
+bp_plot <- barplot(alk.data.plot$mean / 1000000, ylab = "Counts Per Minute (millions)", 
+                   names.arg = alk.data.plot$Normality,
+                   space = c(0, 0.5, 0, 0, 0.5, 0, 0),
+                   lwd=3, yaxt="n", col="gray", ylim = c(0, 2.5),
+                   cex.lab=1.5, cex.names = 1.25)
+arrows(x0 = bp_plot, y0 = alk.data.plot$mean / 1000000, 
+       y1 = alk.data.plot$mean / 1000000 - alk.data.plot$sem / 1000000, angle = 90,
+       length=0.1, lwd = 2)
+arrows(x0 = bp_plot, y0 = alk.data.plot$mean / 1000000, 
+       y1 = alk.data.plot$mean / 1000000 + alk.data.plot$sem / 1000000, angle = 90,
+       length=0.1, lwd = 2)
+axis(side = 2, labels=T, lwd.ticks=2, las=2, lwd=2)
+mtext(alk.data.plot$Group[c(1,3,6)], side = 1, at=bp_plot[c(1,3,6)], line = 2.5, cex=1.5)
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices 
+ 
+```
+ 
+ 
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Bicarbonate Recovery"}
+img <- readPNG("../figures/Alkalinity.png")
+ grid.raster(img)
+```
+
+ 
+ 
+## Trap, Time and Solution Experiment
+
+I think I finally figured things out. 
+The key is the use just 1N KOH and to let it stand a while.
+ 
+```{r, results='hide'}
+# Import Data
+trap.data <- read.csv("../notes/20151002_BRBP.csv", header=T)
+
+# Raw Data For Intra Vial Test
+ina  <- trap.data[grep("_in", trap.data$Sample), 2]
+outa <- trap.data[grep("_out", trap.data$Sample), 2]
+in1  <- trap.data[trap.data$Sample == "Tube1_in", 2]
+out1 <- trap.data[trap.data$Sample == "Tube1_out", 2]
+in5  <- trap.data[trap.data$Sample == "Tube5_in", 2]
+out5 <- trap.data[trap.data$Sample == "Tube5_out", 2]
+
+# Define Theoretical Value
+voucher <- mean(trap.data[trap.data$Sample == "Voucher", 2])
+
+# Correct For Vol
+in.c   <- ina  * 5  # used 100ul of 500ul
+out.c  <- outa * 50 # used 100ul of 5000ul
+in1.c  <- in1  * 5  # used 100ul of 500ul
+out1.c <- out1 * 50 # used 100ul of 5000ul
+in5.c  <- in5  * 5  # used 100ul of 500ul
+out5.c <- out5 * 50 # used 100ul of 5000ul
+
+# Percent of Theoretical
+in.p   <- in.c   / voucher
+out.p  <- out.c  / voucher
+in1.p  <- in1.c  / voucher
+out1.p <- out1.c / voucher
+in5.p  <- in5.c  / voucher
+out5.p <- out5.c / voucher
+
+# Calculate mean and sem
+means <- round(c("Trap" = mean(in.p), "Res." = mean(out.p) ,
+                 "Trap" = mean(in1.p), "Res." = mean(out1.p), 
+                 "Trap" = mean(in5.p), "Res." = mean(out5.p)), 3)
+ses <- round(c("Trap" = se(in.p), "Residual" = se(out.p) ,
+               "Trap" = se(in1.p), "Res." = se(out1.p),
+               "Trap" = se(in5.p), "Res." = se(out5.p)), 3)
+
+# Plot
+png(filename="../figures/Recovery2.png",
+    width = 1600, height = 1200, res = 96*2)
+
+par(mar=c(4.5,5,0.5,0.5), oma=c(1,1,1,1)+0.1, lwd=2)
+bp_plot <- barplot(means, ylab = "Percent Recovery", 
+                   ylim = c(0, 1), xlim = c(1,9), lwd=3, yaxt="n", col="gray",
+                   cex.lab=1.5, cex.names = 1.25, 
+                   space = c(1, 0, 1, 0, 1, 0))
+arrows(x0 = bp_plot, y0 = means, y1 = means - ses, angle = 90,
+       length=0.1, lwd = 2)
+arrows(x0 = bp_plot, y0 = means, y1 = means + ses, angle = 90,
+       length=0.1, lwd = 2)
+axis(side = 2, labels=T, lwd.ticks=2, las=2, lwd=2)
+mtext(c("Overall", "Tube #1", "Tube #5"), side = 1, at=bp_plot[c(1, 3, 5)], 
+      line = 2.5, cex=1.5, adj=0)
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+```
+
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Bicarbonate Recovery"}
+img <- readPNG("../figures/Recovery2.png")
+ grid.raster(img)
+```
+
+
+## Bicarbonate Concentration Experiment
+
+So far we have shown that we have approximately 90% efficiency with the BP/BR vials
+However, we do not yet know if efficiency could be a function of CO2 respired.
+So, we are going to test the set-up with different starting concentrations of bicarbonate
+ 
+```{r, results='hide'}
+# Import Data
+trap.data <- read.csv("../notes/20151007_BRBP.csv", header=T)
+
+# Raw Data For Intra Vial Test
+vouchers  <- trap.data[grep("Voucher", trap.data$Sample), ]
+dil.test <- summary(lm(vouchers$CPM ~ vouchers$Conc))
+dil.test$r.squared
+
+Tube1.T <- mean(vouchers[vouchers$Conc == 1, 2])
+Tube2.T <- mean(vouchers[vouchers$Conc == 0.1, 2])
+Tube3.T <- mean(vouchers[vouchers$Conc == 0.01, 2])
+Tube4.T <- mean(vouchers[vouchers$Conc == 0.001, 2])
+Tube5.T <- mean(vouchers[vouchers$Conc == 0, 2])
+
+Tube1 <- trap.data[trap.data$Sample == "Tube1", 2]
+Tube2 <- trap.data[trap.data$Sample == "Tube2", 2]
+Tube3 <- trap.data[trap.data$Sample == "Tube3", 2]
+Tube4 <- trap.data[trap.data$Sample == "Tube4", 2]
+Tube5 <- trap.data[trap.data$Sample == "Tube5", 2]
+
+# Correct For Vol (used 100ul of 500ul)
+Tube1.c <- Tube1 * 5
+Tube2.c <- Tube2 * 5
+Tube3.c <- Tube3 * 5
+Tube4.c <- Tube4 * 5
+Tube5.c <- Tube5 * 5
+
+# Percent of Theoretical
+Tube1.p   <- Tube1.c / Tube1.T
+Tube2.p   <- Tube2.c / Tube2.T
+Tube3.p   <- Tube3.c / Tube3.T
+Tube4.p   <- Tube4.c / Tube4.T
+Tube5.p   <- Tube5.c / Tube5.T
+
+obs <- c(Tube1.c, Tube2.c, Tube3.c, Tube4.c, Tube5.c)
+exp <- rep(c(Tube1.T, Tube2.T, Tube3.T, Tube4.T, Tube5.T), each=3)
+
+obs.log <- log10(obs)
+exp.log <- log10(exp)
+
+model <- lm(obs.log ~ exp.log)
+
+# Plot
+png(filename="../figures/Recovery3.png",
+    width = 1200, height = 1200, res = 96*2)
+
+par(mar=c(5,5,0.5,0.5), oma=c(1,1,1,1)+0.1, lwd=2)
+plot <- plot(obs.log ~ exp.log, cex = 2, las = 1, cex.lab=1.5, pch = 22,
+             xlab = expression(paste("Expected Recovery (log"[10], " CPM)")), 
+             ylab = expression(paste("Oberved Recovery (log"[10], " CPM)")), 
+             lwd=3, col="black", bg = "gray", xlim = c(2, 7), ylim = c(2, 7))
+
+axis(side = 1, labels=F, lwd.ticks=2, las=2, lwd=2)
+axis(side = 2, labels=F, lwd.ticks=2, las=2, lwd=2)
+axis(side = 1, labels=F, lwd.ticks=2, tck=0.01, las=2, lwd=2)
+axis(side = 2, labels=F, lwd.ticks=2, tck=0.01, las=2, lwd=2)
+axis(side = 3, labels=F, lwd.ticks=2, tck=0.01, las=2, lwd=2)
+axis(side = 4, labels=F, lwd.ticks=2, tck=0.01, las=2, lwd=2)
+
+abline(a = 0, b = 1, lty=3, col="black", lwd=2)
+abline(model, lty = 2, col = "gray20", lwd=3)
+
+points(obs.log ~ exp.log, cex = 2, pch = 22, lwd=3, col="black", bg = "gray")
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+```
+
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Bicarbonate Recovery"}
+img <- readPNG("../figures/Recovery3.png")
+ grid.raster(img)
+```
