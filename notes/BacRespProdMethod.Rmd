@@ -287,9 +287,9 @@ png(filename="../figures/Recovery3.png",
     width = 1200, height = 1200, res = 96*2)
 
 par(mar=c(5,5,0.5,0.5), oma=c(1,1,1,1)+0.1, lwd=2)
-plot <- plot(obs.log ~ exp.log, cex = 2, las = 1, cex.lab=1.5, pch = 22,
+plot <- plot(obs.log ~ exp.log, cex = 2, las = 1, cex.lab=1.5, pch = 22, type='n',
              xlab = expression(paste("Expected Recovery (log"[10], " CPM)")), 
-             ylab = expression(paste("Oberved Recovery (log"[10], " CPM)")), 
+             ylab = expression(paste("Observed Recovery (log"[10], " CPM)")), 
              lwd=3, col="black", bg = "gray", xlim = c(2, 7), ylim = c(2, 7))
 
 axis(side = 1, labels=F, lwd.ticks=2, las=2, lwd=2)
@@ -302,7 +302,7 @@ axis(side = 4, labels=F, lwd.ticks=2, tck=0.01, las=2, lwd=2)
 abline(a = 0, b = 1, lty=3, col="black", lwd=2)
 abline(model, lty = 2, col = "gray20", lwd=3)
 
-points(obs.log ~ exp.log, cex = 2, pch = 22, lwd=3, col="black", bg = "gray")
+points(jitter(obs.log, amount = 0.1) ~ jitter(exp.log, amount=0.1), cex = 2, pch = 22, lwd=3, col="black", bg = "gray")
 
 dev.off() # this writes plot to folder
 graphics.off() # shuts down open devices
