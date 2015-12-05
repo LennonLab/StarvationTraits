@@ -312,3 +312,150 @@ graphics.off() # shuts down open devices
 img <- readPNG("../figures/Recovery3.png")
  grid.raster(img)
 ```
+
+# Succinate Test Experiment
+```{r, results='hide'}
+# Import Data
+succ.data <- read.csv("../notes/20151105_BRBP.csv", header=T)
+
+# Raw Data For Intra Vial Test
+vouchers  <- succ.data[grep("Voucher", succ.data$Sample), ]
+
+SetA.T <- mean(vouchers[vouchers$Conc == 10, 2])
+SetB.T <- mean(vouchers[vouchers$Conc == 0.5, 2])
+
+SetA_supp <- succ.data[succ.data$Sample == "Tube1" | 
+                         succ.data$Sample == "Tube2", 2] * 50
+SetA_trap <- succ.data[succ.data$Sample == "Tube1_trap" |
+                         succ.data$Sample == "Tube2_trap", 2] * 5
+SetA_head <- succ.data[succ.data$Sample == "Tube1_head" |
+                         succ.data$Sample == "Tube2_head", 2] * 15
+
+SetB_supp <- succ.data[succ.data$Sample == "Tube3" | 
+                         succ.data$Sample == "Tube4", 2] * 50
+SetB_trap <- succ.data[succ.data$Sample == "Tube3_trap" |
+                         succ.data$Sample == "Tube4_trap", 2] * 5
+SetB_head <- succ.data[succ.data$Sample == "Tube3_head" |
+                         succ.data$Sample == "Tube4_head", 2] * 15
+
+ctr_supp <- succ.data[succ.data$Sample == "Tube5", 2] * 50
+ctr_trap <- succ.data[succ.data$Sample == "Tube5_trap", 2] * 5
+ctr_head <- succ.data[succ.data$Sample == "Tube5_head", 2] * 15
+
+# Ctrl Subtraction and Percent of Theoretical
+SetA_supp.c <- mean((SetA_supp - ctr_supp) / SetA.T)
+SetA_trap.c <- mean((SetA_trap - ctr_trap) / SetA.T)
+SetA_head.c <- mean((SetA_head - ctr_head) / SetA.T)
+SetB_supp.c <- mean((SetB_supp - ctr_supp) / SetB.T)
+SetB_trap.c <- mean((SetB_trap - ctr_trap) / SetB.T)
+SetB_head.c <- mean((SetB_head - ctr_head) / SetB.T)
+
+SetA <- c(SetA_supp.c, SetA_trap.c, SetA_head.c) 
+SetB <- c(SetB_supp.c, SetB_trap.c, SetB_head.c)
+
+names(SetA) <- c("Supp", "Trap", "Head")
+names(SetB) <- c("Supp", "Trap", "Head")
+
+bps <- as.matrix(data.frame(SetA, SetB))
+
+# Plot
+png(filename="../figures/Succinate1.png",
+    width = 1200, height = 1200, res = 96*2)
+
+par(mar=c(5,5,3,0.5), oma=c(1,1,1,1)+0.1, lwd=2)
+barplot(bps, main = "Succinate Metabolism Mass Balance",
+        xlab = "Succinate Concentration",
+        ylab = "Percent Recovery",
+        names.arg = c("10 mM", "0.5 mM"),
+        legend = c("Cells", "KOH Trap", "Head Space"), 
+        las = 1, cex.lab = 1.5,
+        args.legend = c(x= "topleft", bty="n"))
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+```
+
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="Succinate Mass Balance"}
+img <- readPNG("../figures/Succinate1.png")
+grid.raster(img)
+```
+
+
+# Succinate Test Experiment 2
+```{r, results='hide'}
+# Import Data
+succ.data <- read.csv("../notes/20151119_BRBP.csv", header=T)
+
+# Raw Data For Intra Vial Test
+vouchers  <- succ.data[grep("Voucher", succ.data$Sample), ]
+
+SetA.T <- mean(vouchers[vouchers$Conc == 10, 2])
+SetB.T <- mean(vouchers[vouchers$Conc == 0.5, 2])
+
+SetA_cells <- succ.data[succ.data$Sample == "Tube1_cells" | 
+                         succ.data$Sample == "Tube2_cells", 2] * 1.5/5
+SetA_supp <- succ.data[succ.data$Sample == "Tube1_supp" |
+                         succ.data$Sample == "Tube2_supp", 2] * 50
+SetA_ac.cells <- succ.data[succ.data$Sample == "Tube1_ac-cells" | 
+                         succ.data$Sample == "Tube2_ac-cells", 2] * 1.5/5
+SetA_ac.supp <- succ.data[succ.data$Sample == "Tube1_ac-supp" |
+                         succ.data$Sample == "Tube2_ac-supp", 2] * 50
+
+SetB_cells <- succ.data[succ.data$Sample == "Tube3_cells" | 
+                         succ.data$Sample == "Tube4_cells", 2] * 1.5/5
+SetB_supp <- succ.data[succ.data$Sample == "Tube3_supp" |
+                         succ.data$Sample == "Tube4_supp", 2] * 50
+SetB_ac.cells <- succ.data[succ.data$Sample == "Tube3_ac-cells" | 
+                         succ.data$Sample == "Tube4_ac-cells", 2] * 1.5/5
+SetB_ac.supp <- succ.data[succ.data$Sample == "Tube3_ac-supp" |
+                         succ.data$Sample == "Tube4_ac-supp", 2] * 50
+
+ctr_cells <- succ.data[succ.data$Sample == "Tube5_cells", 2] * 1.5/5
+ctr_supp <- succ.data[succ.data$Sample == "Tube5_supp", 2] * 50
+ctr_ac.cells <- succ.data[succ.data$Sample == "Tube5_ac-cells", 2] * 1.5/5
+ctr_ac.supp <- succ.data[succ.data$Sample == "Tube5_ac-supp", 2] * 50
+
+# Ctrl Subtraction and Percent of Theoretical
+SetA_cells.c <- mean((SetA_cells - ctr_cells) / SetA.T)
+SetA_supp.c <- mean((SetA_supp - ctr_supp) / SetA.T)
+SetA_ac.cells.c <- mean((SetA_ac.cells - ctr_ac.cells) / SetA.T)
+SetA_ac.supp.c <- mean((SetA_ac.supp - ctr_ac.supp) / SetA.T)
+SetB_cells.c <- mean((SetB_cells - ctr_cells) / SetB.T)
+SetB_supp.c <- mean((SetB_supp - ctr_supp) / SetB.T)
+SetB_ac.cells.c <- mean((SetB_ac.cells - ctr_ac.cells) / SetB.T)
+SetB_ac.supp.c <- mean((SetB_ac.supp - ctr_ac.supp) / SetB.T)
+
+
+SetA <- c(SetA_cells.c, SetA_supp.c, SetA_ac.cells.c, SetA_ac.supp.c) 
+SetB <- c(SetB_cells.c, SetB_supp.c, SetB_ac.cells.c, SetB_ac.supp.c) 
+
+names(SetA) <- c("Cells", "Supp.", "Acidified Cells", "Acidfied Supp.")
+names(SetB) <- c("Cells", "Supp.", "Acidified Cells", "Acidfied Supp.")
+
+bps <- as.matrix(data.frame(SetA, SetB))
+
+# Plot
+png(filename="../figures/Succinate2.png",
+    width = 1200, height = 1200, res = 96*2)
+
+par(mar=c(5,5,3,0.5), oma=c(1,1,1,1)+0.1, lwd=2)
+barplot(bps, main = "Succinate Metabolism Mass Balance with Acidification",
+        xlab = "Succinate Concentration",
+        ylab = "Percent Recovery",
+        names.arg = c("10 mM", "0.5 mM"),
+        legend = c("Cells", "Supp.", "Acidified Cells", "Acidfied Supp."), 
+        las = 1, cex.lab = 1.5,
+        args.legend = c(x= "topright", bty="n"))
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+```
+
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="Succinate Mass Balance"}
+img <- readPNG("../figures/Succinate2.png")
+grid.raster(img)
+```
+
+Conclusions: Acidifiction does not lyse cells. It is clear, however, that we 
+need to increase the 14C succinate in the succinate solution.
+
