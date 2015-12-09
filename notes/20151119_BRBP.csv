@@ -1,0 +1,24 @@
+Sample, CPM, Conc
+Tube1_cells, 856.00, 10
+Tube1_supp, 887.00, 10
+Tube1_ac-cells, 2246.50, 10
+Tube1_ac-supp, 578.50, 10
+Tube2_cells, 955.50, 10
+Tube2_supp, 873.00, 10
+Tube2_ac-cells, 3004.00
+Tube2_ac-supp, 555.0, 10
+Tube3_cells, 292.50, 0.5
+Tube3_supp, 66.50, 0.5
+Tube3_ac-cells, 124.00, 0.5
+Tube3_ac-supp, 46.00, 0.5
+Tube4_cells, 255.00, 0.5
+Tube4_supp, 33.50, 0.5
+Tube4_ac-cells, 125.00, 0.5
+Tube4_ac-supp, 44.50, 0.5
+Tube5_cells, 109.00, 0
+Tube5_supp, 38.50, 0
+Tube5_ac-cells, 26.50, 0
+Tube5_ac-supp, 29.00, 0
+Voucher, 113680, 10
+Voucher, 6109.00, 0.5
+Blank, 26.00, 0
