@@ -593,25 +593,25 @@ succ.data <- read.csv("../notes/20160116_BRBP.csv", header=T)
 vouchers  <- succ.data[grep("Voucher", succ.data$Tube), ]
 control     <- succ.data[grep("Control", succ.data$Tube), ]
 
-KBS0707.1p <- succ.data[succ.data$Tube == "Tube3" & succ.data$Sample == "Cells", 2] * 5151/1800
+KBS0707.1p <- succ.data[succ.data$Tube == "Tube3" & succ.data$Sample == "Cells", 2] * 6151/1800
 KBS0707.1r <- succ.data[succ.data$Tube == "Tube3" & succ.data$Sample == "Trap", 2] * 500/100
-KBS0707.1s <- succ.data[succ.data$Tube == "Tube3" & succ.data$Sample == "Supp", 2] * 5150/100
+KBS0707.1s <- succ.data[succ.data$Tube == "Tube3" & succ.data$Sample == "Supp", 2] * 6150/100
 
-KBS0707.2p <- succ.data[succ.data$Tube == "Tube4" & succ.data$Sample == "Cells", 2] * 5151/1800
+KBS0707.2p <- succ.data[succ.data$Tube == "Tube4" & succ.data$Sample == "Cells", 2] * 6151/1800
 KBS0707.2r <- succ.data[succ.data$Tube == "Tube4" & succ.data$Sample == "Trap", 2] * 500/100
-KBS0707.2s <- succ.data[succ.data$Tube == "Tube4" & succ.data$Sample == "Supp", 2] * 5150/100
+KBS0707.2s <- succ.data[succ.data$Tube == "Tube4" & succ.data$Sample == "Supp", 2] * 6150/100
 
-KBS0707.3p <- succ.data[succ.data$Tube == "Tube5" & succ.data$Sample == "Cells", 2] * 5151/1800
+KBS0707.3p <- succ.data[succ.data$Tube == "Tube5" & succ.data$Sample == "Cells", 2] * 6151/1800
 KBS0707.3r <- succ.data[succ.data$Tube == "Tube5" & succ.data$Sample == "Trap", 2] * 500/100
-KBS0707.3s <- succ.data[succ.data$Tube == "Tube5" & succ.data$Sample == "Supp", 2] * 5150/100
+KBS0707.3s <- succ.data[succ.data$Tube == "Tube5" & succ.data$Sample == "Supp", 2] * 6150/100
 
-control.p <- succ.data[succ.data$Tube == "Tube2" & succ.data$Sample == "Cells", 2] * 5151/1800
+control.p <- succ.data[succ.data$Tube == "Tube2" & succ.data$Sample == "Cells", 2] * 6151/1800
 control.r <- succ.data[succ.data$Tube == "Tube2" & succ.data$Sample == "Trap", 2] * 500/100
-control.s <- succ.data[succ.data$Tube == "Tube2" & succ.data$Sample == "Trap", 2] * 5150/100
+control.s <- succ.data[succ.data$Tube == "Tube2" & succ.data$Sample == "Trap", 2] * 6150/100
 
-blank.p <- succ.data[succ.data$Tube == "Tube1" & succ.data$Sample == "Cells", 2] * 5151/1800
+blank.p <- succ.data[succ.data$Tube == "Tube1" & succ.data$Sample == "Cells", 2] * 5051/1800
 blank.r <- succ.data[succ.data$Tube == "Tube1" & succ.data$Sample == "Trap", 2] * 500/100
-blank.s <- succ.data[succ.data$Tube == "Tube1" & succ.data$Sample == "Supp", 2] * 5150/100
+blank.s <- succ.data[succ.data$Tube == "Tube1" & succ.data$Sample == "Supp", 2] * 5050/100
  
 KBS0707.1p.per <- KBS0707.1p / vouchers$CPM
 KBS0707.1r.per <- KBS0707.1r / vouchers$CPM
@@ -646,7 +646,7 @@ bge_plot <- barplot(massB, main = "Succinate Metabolism Mass Balance",
         ylab = "Percent Recovery", yaxt= "n", 
         names.arg = c("", "", ""),
         legend = c("Production", "Respiration", "Supernatant"), 
-        las = 1, cex.lab = 1.5, ylim = c(0,1), xlim = c(0, 3.2),
+        las = 1, cex.lab = 1.5, ylim = c(0,1.2), xlim = c(0, 3.2),
         space = c(0, 0.1, 0.1), 
         args.legend = c(x= "topleft", bty="n", horiz=T))
 
@@ -661,6 +661,86 @@ graphics.off() # shuts down open devices
 
 ```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Succinate Recovery and BGE"}
 img <- readPNG("../figures/Succinate5.png")
+ grid.raster(img)
+```
+
+# Succinate Test Experiment 5: 14C Succinate Concentration BGE KBS0707 Ancestor
+```{r, results='hide'}
+# Import Data
+succ.data <- read.csv("../notes/20160121_BRBP.csv", header=T)
+
+# Raw Data For Intra Vial Test
+vouchers  <- succ.data[grep("Voucher", succ.data$Tube), ]
+control     <- succ.data[grep("Control", succ.data$Tube), ]
+
+KBS0802.1p <- succ.data[succ.data$Tube == "Tube3" & succ.data$Sample == "Cells", 2] * 6151/1800
+KBS0802.1r <- succ.data[succ.data$Tube == "Tube3" & succ.data$Sample == "Trap", 2] * 500/100
+KBS0802.1s <- succ.data[succ.data$Tube == "Tube3" & succ.data$Sample == "Supp", 2] * 6150/100
+
+KBS0802.2p <- succ.data[succ.data$Tube == "Tube4" & succ.data$Sample == "Cells", 2] * 6151/1800
+KBS0802.2r <- succ.data[succ.data$Tube == "Tube4" & succ.data$Sample == "Trap", 2] * 500/100
+KBS0802.2s <- succ.data[succ.data$Tube == "Tube4" & succ.data$Sample == "Supp", 2] * 6150/100
+
+KBS0802.3p <- succ.data[succ.data$Tube == "Tube5" & succ.data$Sample == "Cells", 2] * 6151/1800
+KBS0802.3r <- succ.data[succ.data$Tube == "Tube5" & succ.data$Sample == "Trap", 2] * 500/100
+KBS0802.3s <- succ.data[succ.data$Tube == "Tube5" & succ.data$Sample == "Supp", 2] * 6150/100
+
+control.p <- succ.data[succ.data$Tube == "Tube2" & succ.data$Sample == "Cells", 2] * 6151/1800
+control.r <- succ.data[succ.data$Tube == "Tube2" & succ.data$Sample == "Trap", 2] * 500/100
+control.s <- succ.data[succ.data$Tube == "Tube2" & succ.data$Sample == "Trap", 2] * 6150/100
+
+blank.p <- succ.data[succ.data$Tube == "Tube1" & succ.data$Sample == "Cells", 2] * 5051/1800
+blank.r <- succ.data[succ.data$Tube == "Tube1" & succ.data$Sample == "Trap", 2] * 500/100
+blank.s <- succ.data[succ.data$Tube == "Tube1" & succ.data$Sample == "Supp", 2] * 5050/100
+ 
+KBS0802.1p.per <- KBS0802.1p / vouchers$CPM
+KBS0802.1r.per <- KBS0802.1r / vouchers$CPM
+KBS0802.1s.per <- KBS0802.1s / vouchers$CPM
+
+KBS0802.2p.per <- KBS0802.2p / vouchers$CPM
+KBS0802.2r.per <- KBS0802.2r / vouchers$CPM
+KBS0802.2s.per <- KBS0802.2s / vouchers$CPM
+
+KBS0802.3p.per <- KBS0802.3p / vouchers$CPM
+KBS0802.3r.per <- KBS0802.3r / vouchers$CPM
+KBS0802.3s.per <- KBS0802.3s / vouchers$CPM
+
+SetA.1 <- c(mean(KBS0802.1p.per), mean(KBS0802.1r.per), mean(KBS0802.1s.per))
+SetA.2 <- c(mean(KBS0802.2p.per), mean(KBS0802.2r.per), mean(KBS0802.2s.per))
+SetA.3 <- c(mean(KBS0802.3p.per), mean(KBS0802.3r.per), mean(KBS0802.3s.per))
+
+names(SetA.1) <- c("Production", "Respiration", "Supernatant")
+names(SetA.2) <- c("Production", "Respiration", "Supernatant")
+names(SetA.3) <- c("Production", "Respiration", "Supernatant")
+
+massB <- as.matrix(data.frame(SetA.1, SetA.2, SetA.3))
+massB.n <- round(massB[1, ] / (massB[1, ] + massB[2, ]), 2)
+massB.h <- (massB[1, 1:3] + massB[2, 1:3])
+
+# Plot
+png(filename="../figures/Succinate6.png",
+    width = 1200, height = 1000, res = 96*2)
+
+par(mar=c(3.5,5,3,0.5), oma=c(1,1,1,1)+0.1, lwd=2)
+bge_plot <- barplot(massB, main = "Succinate Metabolism Mass Balance",
+        ylab = "Percent Recovery", yaxt= "n", 
+        names.arg = c("", "", ""),
+        legend = c("Production", "Respiration", "Supernatant"), 
+        las = 1, cex.lab = 1.5, ylim = c(0,1.2), xlim = c(0, 3.2),
+        space = c(0, 0.1, 0.1), 
+        args.legend = c(x= "topleft", bty="n", horiz=T))
+
+mtext(c("KBS0802"), side = 1, at=bge_plot[c(2)], 
+      line = 1.5, cex=1.5, adj=0.5)
+axis(side = 2, labels=T, at = c(0, 0.25, 0.5, 0.75, 1), las = 2, lwd = 2)
+text(bge_plot, massB.h + 0.04, massB.n, cex = 1.5, col = "red")
+ 
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+```
+
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Succinate Recovery and BGE"}
+img <- readPNG("../figures/Succinate6.png")
  grid.raster(img)
 ```
 
