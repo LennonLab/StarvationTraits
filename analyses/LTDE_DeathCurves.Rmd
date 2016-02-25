@@ -1,0 +1,213 @@
+---
+title: "LTDE Death Rate Experiment"
+author: "Mollie Carrison, Mario E. Muscarella, Jay T. Lennon"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+header-includes:
+   - \usepackage{array}
+   - \usepackage{graphics}
+output: 
+  pdf_document:
+    fig_caption: true
+geometry: margin=2.54cm
+---
+
+```{r, echo=FALSE, results='hide'}
+rm(list=ls())
+setwd("~/GitHub/StarvationTraits/analyses/")
+se <- function(x, ...){sd(x, na.rm = TRUE)/sqrt(length(na.omit(x)))}
+CV <- function(x, ...){(sd(x, na.rm = TRUE)/mean(x, na.rm = TRUE))*100}
+library(png)
+library(grid)
+```
+
+## Import Data
+```{r}
+KBS0802 <- read.delim("../data/DeathCurves/KBS0802.txt", header = T, row.names = NULL)
+levels(KBS0802$Organism) <- c("Anc", "A1", "B1", "C1")
+
+```
+
+## Plot Raw Data
+```{r}
+plot(CFU ~ Day, data = KBS0802, col = order(levels(KBS0802$Organism)), pch = 15)
+legend("topright", legend = levels(KBS0802$Organism), 
+       bty = 'n', pch = 15, col = order(levels(KBS0802$Organism)))
+```
+
+## Plot Log Data
+```{r}
+# Define Plot Parameters
+par(mar = c(5, 5, 1, 1) + 0.1)
+
+# Initialize Plot
+plot(log10(CFU) ~ Day, data = KBS0802, col = order(levels(KBS0802$Organism)), 
+     pch = 15, las = 1, cex = 1.5, xaxt = 'n', yaxt = 'n', xlab = '', ylab = '')
+legend("topright", legend = levels(KBS0802$Organism), 
+       bty = 'n', pch = 15, col = order(levels(KBS0802$Organism)))
+
+# Add Axes
+axis(side = 1, labels = T, lwd.ticks = 2, cex.axis = 1, las = 1)
+axis(side = 2, labels = T, lwd.ticks = 2, cex.axis = 1, las = 1, at = c(7, 7.4, 7.8, 8.2))
+axis(side = 3, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=-0.02)
+axis(side = 4, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=-0.02, at = c(7, 7.4, 7.8, 8.2))
+axis(side = 1, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 2, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01, at = c(7, 7.4, 7.8, 8.2))
+axis(side = 3, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 4, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01, at = c(7, 7.4, 7.8, 8.2))
+
+# Add Axis Labels
+mtext("Day", side = 1, line = 3, cex = 1.5)
+mtext("log10(CFUs)", side = 2, line = 3, cex = 1.5)
+
+# Add Box
+box(lwd = 2)
+```
+
+# Ancestor Plots
+```{r}
+ancestors <- read.delim("../data/DeathCurves/AncestorDeathCurves.txt",header=T, row.names = NULL)
+```
+
+# Basic Ancestor Plot
+```{r}
+plot(CFU ~ Day, data = ancestors, col = order(levels(ancestors$Organism)), pch = 16)
+legend("topright", legend = levels(ancestors$Organism), 
+       bty = 'n', pch = 16, col = order(levels(ancestors$Organism)))
+
+```
+
+
+# Log Ancestor Plot
+```{r}
+# Define Plot Parameters
+par(mar = c(5, 5, 1, 1) + 0.1)
+
+# Initialize Plot
+plot(log10(CFU) ~ Day, data = ancestors, col = order(levels(ancestors$Organism)), 
+     pch = 16, las = 1, cex = 1.5, xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+     ylim = c(4.5, 9.5))
+legend("topright", legend = levels(ancestors$Organism), ncol = 2,
+       bty = 'n', pch = 16, col = order(levels(ancestors$Organism)))
+
+# Add Axes
+axis(side = 1, labels = T, lwd.ticks = 2, cex.axis = 1, las = 1)
+axis(side = 2, labels = T, lwd.ticks = 2, cex.axis = 1, las = 1)
+axis(side = 3, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=-0.02)
+axis(side = 4, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=-0.02)
+axis(side = 1, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 2, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 3, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 4, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+
+# Add Axis Labels
+mtext("Day", side = 1, line = 3, cex = 1.5)
+mtext("log10(CFUs)", side = 2, line = 3, cex = 1.5)
+
+# Add Box
+box(lwd = 2)
+```
+
+# 710 and 724 Ancestors
+```{r}
+KBS0710 <- read.delim("../data/DeathCurves/KBS0710.txt", header=T, row.names=NULL)
+KBS0710$CFU <- KBS0710$Colonies / KBS0710$Dilution * 10
+
+# Define Plot Parameters
+par(mar = c(5, 5, 3, 1) + 0.1)
+library(RColorBrewer)
+(palette(gray(seq(0,.9,len = 10))))
+
+syms <- rep(NA, length(KBS0710$Organism))
+for (i in 1:length(syms)){
+if (grepl("A", KBS0710$Organism[i]) == TRUE){
+  syms[i] <- 17
+} else {
+  syms[i] <- 19
+}}
+
+cols <- rep(NA, length(KBS0710$Organism))
+for (i in 1:length(cols)){
+if (grepl("A", KBS0710$Organism[i]) == TRUE){
+  cols[i] <- "cornflowerblue"
+} else {
+  cols[i] <- "wheat3"
+}}
+
+
+# Initialize Plot
+plot(log10(CFU) ~ Day, data = KBS0710, col = cols, 
+     pch = syms, las = 1, cex = 1.5, xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+     ylim = c(6, 8.5))
+legend("topright", legend = c("Ancestor", "Derived"), ncol = 2,
+       bty = 'n', pch = c(17, 19), col = c("cornflowerblue", "wheat3"))
+
+# Add Axes
+axis(side = 1, labels = T, lwd.ticks = 2, cex.axis = 1, las = 1)
+axis(side = 2, labels = T, lwd.ticks = 2, cex.axis = 1, las = 1)
+axis(side = 3, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=-0.02)
+axis(side = 4, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=-0.02)
+axis(side = 1, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 2, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 3, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 4, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+
+# Add Axis Labels
+mtext("Day", side = 1, line = 3, cex = 1.5)
+mtext("log10(CFUs)", side = 2, line = 3, cex = 1.5)
+mtext("Starvation: KBS0710", side = 3, line = 1, cex = 1.5)
+
+# Add Box
+box(lwd = 2)
+```
+
+
+```{r}
+KBS0724 <- read.delim("../data/DeathCurves/KBS0724.txt", header=T, row.names=NULL)
+KBS0724$CFU <- KBS0724$Colonies / KBS0724$Dilution * 10
+
+# Define Plot Parameters
+par(mar = c(5, 5, 3, 1) + 0.1)
+
+syms <- rep(NA, length(KBS0724$Organism))
+for (i in 1:length(syms)){
+if (grepl("A", KBS0724$Organism[i]) == TRUE){
+  syms[i] <- 17
+} else {
+  syms[i] <- 19
+}}
+
+cols <- rep(NA, length(KBS0724$Organism))
+for (i in 1:length(cols)){
+if (grepl("A", KBS0724$Organism[i]) == TRUE){
+  cols[i] <- "cornflowerblue"
+} else {
+  cols[i] <- "wheat3"
+}}
+
+
+# Initialize Plot
+plot(log10(CFU) ~ Day, data = KBS0724, col = cols, 
+     pch = syms, las = 1, cex = 1.5, xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+     ylim = c(5.5, 7.5))
+legend("topright", legend = c("Ancestor", "Derived"), ncol = 2,
+       bty = 'n', pch = c(17, 19), col = c("cornflowerblue", "wheat3"))
+
+# Add Axes
+axis(side = 1, labels = T, lwd.ticks = 2, cex.axis = 1, las = 1)
+axis(side = 2, labels = T, lwd.ticks = 2, cex.axis = 1, las = 1)
+axis(side = 3, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=-0.02)
+axis(side = 4, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=-0.02)
+axis(side = 1, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 2, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 3, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 4, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+
+# Add Axis Labels
+mtext("Day", side = 1, line = 3, cex = 1.5)
+mtext("log10(CFUs)", side = 2, line = 3, cex = 1.5)
+mtext("Starvation: KBS0724", side = 3, line = 1, cex = 1.5)
+
+# Add Box
+box(lwd = 2)
+```
+
