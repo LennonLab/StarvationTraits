@@ -43,7 +43,7 @@ control802   <- KBS0802.data[grep("Control", KBS0802.data$Tube), ]
 BGE.data.full <- rbind(KBS0707.data, KBS0802.data)
 
 # Remove Control and Voucher
-BGE.data <- BGE.data[-which(BGE.data.full$Tube == "Voucher" | BGE.data.full$Tube == "Control"), ]
+BGE.data <- BGE.data.full[-which(BGE.data.full$Tube == "Voucher" | BGE.data.full$Tube == "Control"), ]
 BGE.data$CPM.c <- NA
 
 for (i in 1:dim(BGE.data)[1]){
@@ -95,10 +95,10 @@ test <- aov(BGE ~ Organism, data = BGE.802.w)
 TukeyHSD(test)
 
 # Plot
-png(filename="../figures/Succinate7.png",
-    width = 1200, height = 1000, res = 96*2)
+png(filename="./figures/BGE802.png",
+    width = 1000, height = 800, res = 96*2)
 
-par(mar=c(3,5,2.5,0.5))
+par(mar=c(3,5.5,2.5,1))
 bge_plot <- plot(BGE.802.c$BGE_mean, main = "LTDE: KBS0802 BGE", pch = 15, cex = 1.5,
         ylab = "", yaxt= "n", xaxt = "n", xlab = "",
         xlim = c(0.5, 4.5), ylim = c(0.26, 0.33))
@@ -108,7 +108,7 @@ arrows(x0 = c(1:4), y0 = BGE.802.c$BGE_mean, y1 = BGE.802.c$BGE_mean - BGE.802.c
 arrows(x0 = c(1:4), y0 = BGE.802.c$BGE_mean, y1 = BGE.802.c$BGE_mean + BGE.802.c$BGE_se, angle = 90,
        length=0.1, lwd = 2)
 
-axis(side = 1, labels = c("Ancestor", "A-1", "B-1", "C-1"), at = c(1:4), lwd.ticks = 2)
+axis(side = 1, labels = c("Ancestor", "A-1", "B-1", "C-1"), at = c(1:4), lwd.ticks = 2, cex = 2)
 axis(side = 2, labels = T, at = c(0.26, 0.28, 0.30, 0.32), las = 1, lwd.ticks = 2)
 axis(side=1, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
 axis(side=3, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
@@ -128,6 +128,6 @@ graphics.off() # shuts down open devices
 ```
 
 ```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Succinate Recovery and BGE"}
-img <- readPNG("../figures/Succinate7.png")
+img <- readPNG("./figures/BGE802.png")
  grid.raster(img)
 ```
