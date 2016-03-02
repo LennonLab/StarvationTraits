@@ -16,8 +16,9 @@ rm(list=ls())
 setwd("~/GitHub/StarvationTraits/")
 se <- function(x, ...){sd(x, na.rm = TRUE)/sqrt(length(na.omit(x)))}
 CV <- function(x, ...){(sd(x, na.rm = TRUE)/mean(x, na.rm = TRUE))*100}
-library(png)
-library(grid)
+library("png")
+library("grid")
+library("reshape")
 ```
 
 # Overview
@@ -26,7 +27,9 @@ library(grid)
 # Data Import
 ```{r, results='hide'}
 # Import Data
-KBS0707.data <- read.csv("./data/BGE/20160216_BRBP.csv", header = T)
+# KBS0707.data <- read.csv("./data/BGE/20160216_BRBP.csv", header = T)
+# Not using this run because it doesn't appear that the cultures grew enough
+KBS0707.data <- read.csv("./data/BGE/20160228_BRBP.csv", header = T)
 KBS0802.data <- read.csv("./data/BGE/20160214_BRBP.csv", header = T)
 
 ```
@@ -84,7 +87,10 @@ mean(mass$CPM.p)
 BGE.707 <- droplevels(BGE.data.p[grep("707", BGE.data.p$Organism), ])
 BGE.802 <- droplevels(BGE.data.p[grep("802", BGE.data.p$Organism), ])
 levels(BGE.802$Tube)
+```
 
+### 802 Plot
+```{r}
 BGE.802.w <- reshape(BGE.802, idvar = "Tube", direction="wide", v.names = "CPM.p", timevar = "Sample", drop = c("CPM.c_mean", "CPM.c_CV"))
 
 BGE.802.w$BGE <- BGE.802.w$CPM.p.Cells / (BGE.802.w$CPM.p.Cells + BGE.802.w$CPM.p.Trap)
@@ -129,5 +135,54 @@ graphics.off() # shuts down open devices
 
 ```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Succinate Recovery and BGE"}
 img <- readPNG("./figures/BGE802.png")
+ grid.raster(img)
+```
+
+### 707 Plot
+```{r}
+BGE.707.w <- reshape(BGE.707, idvar = "Tube", direction="wide", v.names = "CPM.p", timevar = "Sample", drop = c("CPM.c_mean", "CPM.c_CV"))
+
+BGE.707.w$BGE <- BGE.707.w$CPM.p.Cells / (BGE.707.w$CPM.p.Cells + BGE.707.w$CPM.p.Trap)
+BGE.707.m <- melt(data.frame(BGE.707.w[,c(1,2,6)]))
+BGE.707.c <- cast(BGE.707.m, Organism ~ variable, fun.aggregate=c(mean, se))
+
+test <- aov(BGE ~ Organism, data = BGE.707.w)
+TukeyHSD(test)
+
+# Plot
+png(filename="./figures/BGE707.png",
+    width = 1000, height = 800, res = 96*2)
+
+par(mar=c(3,5.5,2.5,1))
+bge_plot <- plot(BGE.707.c$BGE_mean, main = "LTDE: KBS0707 BGE", pch = 15, cex = 1.5,
+        ylab = "", yaxt= "n", xaxt = "n", xlab = "",
+        xlim = c(0.5, 4.5), ylim = c(0.22, 0.28))
+
+arrows(x0 = c(1:4), y0 = BGE.707.c$BGE_mean, y1 = BGE.707.c$BGE_mean - BGE.707.c$BGE_se, angle = 90,
+       length=0.1, lwd = 2)
+arrows(x0 = c(1:4), y0 = BGE.707.c$BGE_mean, y1 = BGE.707.c$BGE_mean + BGE.707.c$BGE_se, angle = 90,
+       length=0.1, lwd = 2)
+
+axis(side = 1, labels = c("Ancestor", "A-1", "B-1", "C-1"), at = c(1:4), lwd.ticks = 2, cex = 2)
+axis(side = 2, labels = T, at = c(0.22, 0.24, 0.26, 0.28), las = 1, lwd.ticks = 2)
+axis(side=1, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
+axis(side=3, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
+axis(side=1, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(1:4))
+axis(side=3, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(1:4))
+axis(side = 2, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
+axis(side = 4, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
+axis(side = 2, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
+axis(side = 4, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
+
+box(lwd = 2)
+
+mtext("BGE", side = 2 , line =3.5, cex = 1.5)
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+```
+
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Succinate Recovery and BGE"}
+img <- readPNG("./figures/BGE707.png")
  grid.raster(img)
 ```
