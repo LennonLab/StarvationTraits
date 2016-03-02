@@ -17,8 +17,9 @@ setwd("~/GitHub/StarvationTraits/analyses/")
 source("../bin/modified_Gomp.R")
 se <- function(x, ...){sd(x, na.rm = TRUE)/sqrt(length(na.omit(x)))}
 CV <- function(x, ...){(sd(x, na.rm = TRUE)/mean(x, na.rm = TRUE))*100}
-library(png)
-library(grid)
+library("png")
+library("grid")
+library("reshape")
 ```
 
 # Overview
@@ -30,13 +31,69 @@ library(grid)
 input <- "../data/MichaelisMenten/MMdynamicsGrowthCurve_18hrs_160226_182404.txt"
 # Create Directory For Output
 dir.create("../output", showWarnings = FALSE)
-growth.modGomp(input, "KBS0802.txt", skip=65, delta = 0.02)
+growth.modGomp(input, "KBS0802", skip=65, delta = 0.02)
 
-KBS0802_MM <- 
+KBS0802_MM <- read.csv("../output/KBS0802.txt", header = T)
+KBS0802_key <- read.csv("../data/MichaelisMenten/KBS0802_key.txt", header = T)
   
-  
-  
-  
+KBS0802_rate <- merge(KBS0802_key, KBS0802_MM[,c(1,4)], by = "Curve", all.x = T)
+for (i in 1:dim(KBS0802_rate)[1]){
+  if (is.na(KBS0802_rate$umax[i]) == TRUE){
+    KBS0802_rate$umax[i] <- 0
+  }
+}
+KBS0802_rate$Concentration <- as.character(KBS0802_rate$Concentration)
+
+rate.l <- melt(as.data.frame(KBS0802_rate))
+rate.MM <- cast(rate.l, Strain + Concentration ~ variable, mean)
+rate.MM$Concentration <- as.numeric(rate.MM$Concentration)
+
+syms <- rep(NA, length(rate.MM$Strain))
+for (i in 1:length(syms)){
+if (grepl("Anc", rate.MM$Strain[i]) == TRUE){
+  syms[i] <- 17
+} else {
+  syms[i] <- 15
+}}
+
+cols <- rep(NA, length(rate.MM$Strain))
+for (i in 1:length(cols)){
+if (grepl("Anc", rate.MM$Strain[i]) == TRUE){
+  cols[i] <- "cornflowerblue"
+} else {
+  cols[i] <- "wheat3"
+}}
+
+# Define Plot Parameters
+par(mar = c(5, 5, 3, 1) + 0.1)
+
+plot(rate.MM$umax ~ jitter(log10(rate.MM$Concentration)),
+     xlab = "", ylab = "",
+     xaxt = "n", yaxt = "n",
+     pch = syms, col = cols, cex = 1.5)
+
+legend("topleft", legend = c("Ancestor", "Derived"), 
+       bty = 'n', pch = c(17, 15), col = c("cornflowerblue", "wheat3"))
+
+labs <- levels(as.factor(rate.MM$Concentration))
+poss <- log10(as.numeric(levels(as.factor(rate.MM$Concentration))))
+
+# Add Axes
+axis(side = 1, labels = labs, lwd.ticks = 2, cex.axis = 1, las = 1, at = poss)
+axis(side = 2, labels = T, lwd.ticks = 2, cex.axis = 1, las = 1)
+axis(side = 3, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=-0.02, at = poss)
+axis(side = 4, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=-0.02)
+axis(side = 1, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01, at = poss)
+axis(side = 2, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+axis(side = 3, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01, at = poss)
+axis(side = 4, labels = F, lwd.ticks = 2, cex.axis = 1, las = 1, tck=0.01)
+
+# Add Axis Labels
+mtext("Succinate Concentration (mM)", side = 1, line = 3, cex = 1.5)
+mtext("Growth Rate", side = 2, line = 3, cex = 1.5)
+
+# Add Box
+box(lwd = 2)
   
   
 concentration <- c(1,2,3,5,10,15,20,25,30,35);
