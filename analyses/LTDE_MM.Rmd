@@ -24,8 +24,8 @@ library("reshape")
 
 # Overview
 
-
-# Data Import
+# Experiment 1: Plate Reader Growth Curvse
+## Data Import
 ```{r, results='hide'}
 # Run Growth Curve Analysis
 input <- "../data/MichaelisMenten/MMdynamicsGrowthCurve_18hrs_160226_182404.txt"
@@ -96,28 +96,282 @@ mtext("Growth Rate", side = 2, line = 3, cex = 1.5)
 box(lwd = 2)
   
   
-concentration <- c(1,2,3,5,10,15,20,25,30,35);
-rate <- c(2.8,4.2,3.5,6.3,15.7,21.3,23.7,25.1,25.8,25.9)
-plot(concentration, rate, las=1, pch=16)
-mmModel <- nls(rate~Vm*concentration/(K+concentration), start=list(Vm=30, K=25)) 
-
-summary(mmModel)
-coef(mmModel) 
-  
-library(drc) # for fitting Michaelis Menten model
-model.drm <- drm (v ~ S, data = mm, fct = MM.2())
-
-mml <- data.frame(S = seq(0, max(mm$S), length.out = 100))
-mml$v <- predict(model.drm, newdata = mml)
-
-
-model.nls <- nls(v ~ Vm * S/(K+S), data = mm, 
-                 start = list(K = max(mm$v)/2, Vm = max(mm$v)))
-summary(model.drm)
-summary(model.nls)
+# concentration <- c(1,2,3,5,10,15,20,25,30,35);
+# rate <- c(2.8,4.2,3.5,6.3,15.7,21.3,23.7,25.1,25.8,25.9)
+# plot(concentration, rate, las=1, pch=16)
+# mmModel <- nls(rate~Vm*concentration/(K+concentration), start=list(Vm=30, K=25)) 
+# 
+# summary(mmModel)
+# coef(mmModel) 
+#   
+# library(drc) # for fitting Michaelis Menten model
+# model.drm <- drm (v ~ S, data = mm, fct = MM.2())
+# 
+# mml <- data.frame(S = seq(0, max(mm$S), length.out = 100))
+# mml$v <- predict(model.drm, newdata = mml)
+# 
+# 
+# model.nls <- nls(v ~ Vm * S/(K+S), data = mm, 
+#                  start = list(K = max(mm$v)/2, Vm = max(mm$v)))
+# summary(model.drm)
+# summary(model.nls)
 
 ```
 
 
+# Experiment 2: 14C Succinate Michaelis Menten Experiment
+## Data Import
+```{r, results='hide'}
+KBS0802.data <- read.csv("../data/BGE/20160306_BRBP.csv", header = T)
+```
 
+
+# Data Processing
+```{r, results='hide'}
+# Raw Data For Intra Vial Test
+voucher802  <- KBS0802.data[grep("Voucher", KBS0802.data$Tube), ]
+control802   <- KBS0802.data[grep("Control", KBS0802.data$Tube), ]
+
+# Merge Datasets
+BGE.data.full <- rbind(KBS0802.data)
+
+# Remove Control and Voucher
+BGE.data <- BGE.data.full[-which(BGE.data.full$Tube == "Voucher" | BGE.data.full$Tube == "Control"), ]
+BGE.data$CPM.c <- NA
+
+# Turn Conc into Factor
+BGE.data$Conc <- as.factor(BGE.data$Conc)
+
+# Correct CPM data for entire contents of fraction
+for (i in 1:dim(BGE.data)[1]){
+  if (BGE.data$Sample[i] == "Cells"){
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (6150/1500)
+  } else {
+  if (BGE.data$Sample[i] == "Trap"){
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (500/100)
+  } else {
+  if (BGE.data$Sample[i] == "Sup"){
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (6150/100)
+  }
+  else {
+    BGE.data$CPM.c[i] <- NA
+  }}}
+}
+
+# Re-organize data
+BGE.data.m <- melt(BGE.data)
+BGE.data.p <- cast(BGE.data.m, Tube + Organism + Conc + Sample ~ variable, subset=variable=="CPM.c",  fun.aggregate = c(mean, CV))
+
+# Calculate Percentages given Voucher
+BGE.data.p$CPM.p <- NA
+for (i in 1:dim(BGE.data.p)[1]){
+    BGE.data.p$CPM.p <- BGE.data.p$CPM.c_mean / voucher802$CPM
+  }
+
+# Mass Balance
+mass.l <- melt(as.data.frame(BGE.data.p))
+mass <- cast(mass.l, Tube + Organism + Conc ~ variable, subset=variable == "CPM.p", fun.aggregate = sum)
+mean(mass$CPM.p)
+
+# Drop Levels (needed?)
+BGE.802 <- droplevels(BGE.data.p[grep("802", BGE.data.p$Organism), ])
+levels(BGE.802$Tube)
+
+# Turn percentages into concentrations given experimental concentration
+BGE.802.w <- reshape(BGE.802, idvar = "Tube", direction="wide", v.names = "CPM.p", timevar = "Sample", drop = c("CPM.c_mean", "CPM.c_CV"))
+BGE.802.w$Conc <- as.numeric(as.character(BGE.802.w$Conc))
+BGE.802.w$Conc.Cells <- BGE.802.w$CPM.p.Cells * BGE.802.w$Conc
+BGE.802.w$Conc.Sup <- BGE.802.w$CPM.p.Sup * BGE.802.w$Conc
+BGE.802.w$Conc.Trap <- BGE.802.w$CPM.p.Trap * BGE.802.w$Conc
+
+# Calculate BGE
+BGE.802.w$BGE <- BGE.802.w$CPM.p.Cells / (BGE.802.w$CPM.p.Cells + BGE.802.w$CPM.p.Trap)
+
+# Recovery
+BGE.802.w$Recovery <- rowSums(BGE.802.w[,4:6])
+```
+
+```{r, results = 'hide'}
+# Plot
+png(filename="./figures/MM802-14C.png",
+    width = 1000, height = 1600, res = 96*2)
+
+par(mfrow = c(1,1), mar = c(0, 6, 0, 0) + 0.5, oma = c(4, 0, 1, 1) + 0.5)
+layout(rbind(1, 2, 3), height = c(3, 3, 3)) 
+
+prod_plot <- plot(Conc.Cells ~ log10(Conc), data = BGE.802.w, 
+                 pch = 15, cex = 1.5, col = "cornflowerblue",
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0.0, 0.15))
+axis(side=2, lwd.ticks = 2, tck=-0.05, labels=T, las = 1)
+axis(side=2, lwd.ticks = 2, tck= 0.025, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.025, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.025, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.05,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.025,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.025,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.025,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+mtext("BP", side = 2 , line = 4, cex = 1.5)
+mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
+box(lwd = 2)
+resp_plot <- plot(Conc.Trap ~ log10(Conc), data = BGE.802.w, 
+                 pch = 15, cex = 1.5, col = "cornflowerblue",
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0.05, 0.55))
+axis(side=2, lwd.ticks = 2, tck=-0.05, labels=T, las = 1)
+axis(side=2, lwd.ticks = 2, tck= 0.025, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.025, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.025, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.05,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.025,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.025,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.025,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+mtext("BR", side = 2 , line = 4, cex = 1.5)
+mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
+box(lwd = 2)
+bge_plot <- plot(BGE ~ log10(Conc), data = BGE.802.w, 
+                 pch = 15, cex = 1.5, col = "cornflowerblue",
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0.15, 0.3))
+axis(side=2, lwd.ticks = 2, tck=-0.05, labels=T, las = 1)
+axis(side=2, lwd.ticks = 2, tck= 0.025, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.025, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.025, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.05,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = c(0.1, 0.25, 0.5, 1, 2.5, 5, 10))
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.025,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.025,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.025,
+     at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
+axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+mtext("BGE", side = 2 , line = 4, cex = 1.5)
+box(lwd = 2)
+mtext("Succinate (mM)", side = 1, line = 3, outer=F, cex = 1.5)
+
+
+
+
+
+
+
+
+
+
+
+layout(1)
+plot(BGE ~ Conc.Cells, data = BGE.802.w)
+,
+                 ylab = "", yaxt= "n", xaxt = "n", xlab = "",
+        xlim = c(0.5, 4.5), ylim = c(0.26, 0.33))
+
+arrows(x0 = c(1:4), y0 = BGE.802.c$BGE_mean, y1 = BGE.802.c$BGE_mean - BGE.802.c$BGE_se, angle = 90,
+       length=0.1, lwd = 2)
+arrows(x0 = c(1:4), y0 = BGE.802.c$BGE_mean, y1 = BGE.802.c$BGE_mean + BGE.802.c$BGE_se, angle = 90,
+       length=0.1, lwd = 2)
+
+axis(side = 1, labels = c("Ancestor", "A-1", "B-1", "C-1"), at = c(1:4), lwd.ticks = 2, cex = 2)
+axis(side = 2, labels = T, at = c(0.26, 0.28, 0.30, 0.32), las = 1, lwd.ticks = 2)
+axis(side=1, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
+axis(side=3, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
+axis(side=1, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(1:4))
+axis(side=3, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(1:4))
+axis(side = 2, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(0.26, 0.28, 0.30, 0.32))
+axis(side = 4, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(0.26, 0.28, 0.30, 0.32))
+axis(side = 2, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(0.26, 0.28, 0.30, 0.32))
+axis(side = 4, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(0.26, 0.28, 0.30, 0.32))
+
+box(lwd = 2)
+
+mtext("BGE", side = 2 , line =3.5, cex = 1.5)
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+```
+
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Succinate Recovery and BGE"}
+img <- readPNG("./figures/BGE802.png")
+ grid.raster(img)
+```
+
+### 707 Plot
+```{r}
+BGE.707.w <- reshape(BGE.707, idvar = "Tube", direction="wide", v.names = "CPM.p", timevar = "Sample", drop = c("CPM.c_mean", "CPM.c_CV"))
+
+BGE.707.w$BGE <- BGE.707.w$CPM.p.Cells / (BGE.707.w$CPM.p.Cells + BGE.707.w$CPM.p.Trap)
+BGE.707.m <- melt(data.frame(BGE.707.w[,c(1,2,6)]))
+BGE.707.c <- cast(BGE.707.m, Organism ~ variable, fun.aggregate=c(mean, se))
+
+test <- aov(BGE ~ Organism, data = BGE.707.w)
+TukeyHSD(test)
+
+# Plot
+png(filename="./figures/BGE707.png",
+    width = 1000, height = 800, res = 96*2)
+
+par(mar=c(3,5.5,2.5,1))
+bge_plot <- plot(BGE.707.c$BGE_mean, main = "LTDE: KBS0707 BGE", pch = 15, cex = 1.5,
+        ylab = "", yaxt= "n", xaxt = "n", xlab = "",
+        xlim = c(0.5, 4.5), ylim = c(0.22, 0.28))
+
+arrows(x0 = c(1:4), y0 = BGE.707.c$BGE_mean, y1 = BGE.707.c$BGE_mean - BGE.707.c$BGE_se, angle = 90,
+       length=0.1, lwd = 2)
+arrows(x0 = c(1:4), y0 = BGE.707.c$BGE_mean, y1 = BGE.707.c$BGE_mean + BGE.707.c$BGE_se, angle = 90,
+       length=0.1, lwd = 2)
+
+axis(side = 1, labels = c("Ancestor", "A-1", "B-1", "C-1"), at = c(1:4), lwd.ticks = 2, cex = 2)
+axis(side = 2, labels = T, at = c(0.22, 0.24, 0.26, 0.28), las = 1, lwd.ticks = 2)
+axis(side=1, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
+axis(side=3, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
+axis(side=1, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(1:4))
+axis(side=3, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(1:4))
+axis(side = 2, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
+axis(side = 4, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
+axis(side = 2, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
+axis(side = 4, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
+
+box(lwd = 2)
+
+mtext("BGE", side = 2 , line =3.5, cex = 1.5)
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+```
+
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Succinate Recovery and BGE"}
+img <- readPNG("./figures/BGE707.png")
+ grid.raster(img)
+```
 
