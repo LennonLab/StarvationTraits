@@ -13,7 +13,7 @@ geometry: margin=2.54cm
 
 ```{r, echo=FALSE, results='hide'}
 rm(list=ls())
-setwd("~/GitHub/StarvationTraits/")
+setwd("~/GitHub/StarvationTraits/analyses/")
 se <- function(x, ...){sd(x, na.rm = TRUE)/sqrt(length(na.omit(x)))}
 CV <- function(x, ...){(sd(x, na.rm = TRUE)/mean(x, na.rm = TRUE))*100}
 library("png")
@@ -23,18 +23,25 @@ library("reshape")
 
 # Overview
 
+Is growth efficiency an evolvable trait? Here, we explore patterns in bacterial 
+growth efficiency using a set of isolates from the long-term starvation experiment. 
+Each isolate has an ancestor and at least three derived strains that were isolated
+after three years of starvation in PBS.
+We are using 14C succinate as the sole carbon source for these experiments.
 
-# Data Import
+# Experiment 1: BGE Evolution Experiment
+
+## Data Import 
 ```{r, results='hide'}
 # Import Data
-# KBS0707.data <- read.csv("./data/BGE/20160216_BRBP.csv", header = T)
+# KBS0707.data <- read.csv("../data/BGE/20160216_BRBP.csv", header = T)
 # Not using this run because it doesn't appear that the cultures grew enough
-KBS0707.data <- read.csv("./data/BGE/20160228_BRBP.csv", header = T)
-KBS0802.data <- read.csv("./data/BGE/20160214_BRBP.csv", header = T)
+KBS0707.data <- read.csv("../data/BGE/20160228_BRBP.csv", header = T)
+KBS0802.data <- read.csv("../data/BGE/20160214_BRBP.csv", header = T)
 
 ```
 
-# Data Processing
+## Data Processing
 ```{r, results='hide'}
 # Raw Data For Intra Vial Test
 voucher707  <- KBS0707.data[grep("Voucher", KBS0707.data$Tube), ]
@@ -46,7 +53,8 @@ control802   <- KBS0802.data[grep("Control", KBS0802.data$Tube), ]
 BGE.data.full <- rbind(KBS0707.data, KBS0802.data)
 
 # Remove Control and Voucher
-BGE.data <- BGE.data.full[-which(BGE.data.full$Tube == "Voucher" | BGE.data.full$Tube == "Control"), ]
+BGE.data <- BGE.data.full[-which(BGE.data.full$Tube == "Voucher" | 
+                                   BGE.data.full$Tube == "Control"), ]
 BGE.data$CPM.c <- NA
 
 for (i in 1:dim(BGE.data)[1]){
@@ -65,7 +73,8 @@ for (i in 1:dim(BGE.data)[1]){
 }
 
 BGE.data.m <- melt(BGE.data)
-BGE.data.p <- cast(BGE.data.m, Tube + Organism + Sample ~ variable, subset=variable=="CPM.c",  fun.aggregate = c(mean, CV))
+BGE.data.p <- cast(BGE.data.m, Tube + Organism + Sample ~ variable, 
+                   subset=variable=="CPM.c",  fun.aggregate = c(mean, CV))
 
 BGE.data.p$CPM.p <- NA
 for (i in 1:dim(BGE.data.p)[1]){
@@ -80,7 +89,8 @@ for (i in 1:dim(BGE.data.p)[1]){
 
 mass.l <- melt(as.data.frame(BGE.data.p))
 # Mass Balance
-mass <- cast(mass.l, Tube + Organism ~ variable, subset=variable == "CPM.p", fun.aggregate = sum)
+mass <- cast(mass.l, Tube + Organism ~ variable, subset=variable == "CPM.p", 
+             fun.aggregate = sum)
 mean(mass$CPM.p)
 
 # Data For Plots
@@ -89,41 +99,50 @@ BGE.802 <- droplevels(BGE.data.p[grep("802", BGE.data.p$Organism), ])
 levels(BGE.802$Tube)
 ```
 
-### 802 Plot
+## 802 Plot
 ```{r}
-BGE.802.w <- reshape(BGE.802, idvar = "Tube", direction="wide", v.names = "CPM.p", timevar = "Sample", drop = c("CPM.c_mean", "CPM.c_CV"))
+BGE.802.w <- reshape(BGE.802, idvar = "Tube", direction="wide", 
+                     v.names = "CPM.p", timevar = "Sample", 
+                     drop = c("CPM.c_mean", "CPM.c_CV"))
 
-BGE.802.w$BGE <- BGE.802.w$CPM.p.Cells / (BGE.802.w$CPM.p.Cells + BGE.802.w$CPM.p.Trap)
+BGE.802.w$BGE <- BGE.802.w$CPM.p.Cells / (BGE.802.w$CPM.p.Cells + 
+                                            BGE.802.w$CPM.p.Trap)
 BGE.802.m <- melt(data.frame(BGE.802.w[,c(1,2,6)]))
 BGE.802.c <- cast(BGE.802.m, Organism ~ variable, fun.aggregate=c(mean, se))
 
-test <- aov(BGE ~ Organism, data = BGE.802.w)
-TukeyHSD(test)
-
 # Plot
-png(filename="./figures/BGE802.png",
+png(filename="../figures/BGE802.png",
     width = 1000, height = 800, res = 96*2)
 
 par(mar=c(3,5.5,2.5,1))
-bge_plot <- plot(BGE.802.c$BGE_mean, main = "LTDE: KBS0802 BGE", pch = 15, cex = 1.5,
+bge_plot <- plot(BGE.802.c$BGE_mean, main = "LTDE: KBS0802 BGE", 
+                 pch = 15, cex = 1.5,
         ylab = "", yaxt= "n", xaxt = "n", xlab = "",
         xlim = c(0.5, 4.5), ylim = c(0.26, 0.33))
 
-arrows(x0 = c(1:4), y0 = BGE.802.c$BGE_mean, y1 = BGE.802.c$BGE_mean - BGE.802.c$BGE_se, angle = 90,
+arrows(x0 = c(1:4), y0 = BGE.802.c$BGE_mean, y1 = BGE.802.c$BGE_mean - 
+         BGE.802.c$BGE_se, angle = 90,
        length=0.1, lwd = 2)
-arrows(x0 = c(1:4), y0 = BGE.802.c$BGE_mean, y1 = BGE.802.c$BGE_mean + BGE.802.c$BGE_se, angle = 90,
+arrows(x0 = c(1:4), y0 = BGE.802.c$BGE_mean, y1 = BGE.802.c$BGE_mean + 
+         BGE.802.c$BGE_se, angle = 90,
        length=0.1, lwd = 2)
 
-axis(side = 1, labels = c("Ancestor", "A-1", "B-1", "C-1"), at = c(1:4), lwd.ticks = 2, cex = 2)
-axis(side = 2, labels = T, at = c(0.26, 0.28, 0.30, 0.32), las = 1, lwd.ticks = 2)
+axis(side = 1, labels = c("Ancestor", "A-1", "B-1", "C-1"), 
+     at = c(1:4), lwd.ticks = 2, cex = 2)
+axis(side = 2, labels = T, at = c(0.26, 0.28, 0.30, 0.32), las = 1, 
+     lwd.ticks = 2)
 axis(side=1, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
 axis(side=3, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
 axis(side=1, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(1:4))
 axis(side=3, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(1:4))
-axis(side = 2, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(0.26, 0.28, 0.30, 0.32))
-axis(side = 4, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(0.26, 0.28, 0.30, 0.32))
-axis(side = 2, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(0.26, 0.28, 0.30, 0.32))
-axis(side = 4, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(0.26, 0.28, 0.30, 0.32))
+axis(side = 2, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, 
+     at = c(0.26, 0.28, 0.30, 0.32))
+axis(side = 4, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, 
+     at = c(0.26, 0.28, 0.30, 0.32))
+axis(side = 2, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, 
+     at = c(0.26, 0.28, 0.30, 0.32))
+axis(side = 4, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, 
+     at = c(0.26, 0.28, 0.30, 0.32))
 
 box(lwd = 2)
 
@@ -134,46 +153,55 @@ graphics.off() # shuts down open devices
 ```
 
 ```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Succinate Recovery and BGE"}
-img <- readPNG("./figures/BGE802.png")
+img <- readPNG("../figures/BGE802.png")
  grid.raster(img)
 ```
 
-### 707 Plot
+## 707 Plot
 ```{r}
-BGE.707.w <- reshape(BGE.707, idvar = "Tube", direction="wide", v.names = "CPM.p", timevar = "Sample", drop = c("CPM.c_mean", "CPM.c_CV"))
+BGE.707.w <- reshape(BGE.707, idvar = "Tube", direction="wide", 
+                     v.names = "CPM.p", timevar = "Sample", 
+                     drop = c("CPM.c_mean", "CPM.c_CV"))
 
-BGE.707.w$BGE <- BGE.707.w$CPM.p.Cells / (BGE.707.w$CPM.p.Cells + BGE.707.w$CPM.p.Trap)
+BGE.707.w$BGE <- BGE.707.w$CPM.p.Cells / (BGE.707.w$CPM.p.Cells + 
+                                            BGE.707.w$CPM.p.Trap)
 BGE.707.m <- melt(data.frame(BGE.707.w[,c(1,2,6)]))
-BGE.707.c <- cast(BGE.707.m, Organism ~ variable, fun.aggregate=c(mean, se))
-
-test <- aov(BGE ~ Organism, data = BGE.707.w)
-TukeyHSD(test)
+BGE.707.c <- cast(BGE.707.m, Organism ~ variable, 
+                  fun.aggregate=c(mean, se))
 
 # Plot
-png(filename="./figures/BGE707.png",
+png(filename="../figures/BGE707.png",
     width = 1000, height = 800, res = 96*2)
 
 par(mar=c(3,5.5,2.5,1))
-bge_plot <- plot(BGE.707.c$BGE_mean, main = "LTDE: KBS0707 BGE", pch = 15, cex = 1.5,
-        ylab = "", yaxt= "n", xaxt = "n", xlab = "",
-        xlim = c(0.5, 4.5), ylim = c(0.22, 0.28))
+bge_plot <- plot(BGE.707.c$BGE_mean, main = "LTDE: KBS0707 BGE", 
+                 pch = 15, cex = 1.5, ylab = "", yaxt= "n", 
+                 xaxt = "n", xlab = "",
+                 xlim = c(0.5, 4.5), ylim = c(0.22, 0.28))
 
-arrows(x0 = c(1:4), y0 = BGE.707.c$BGE_mean, y1 = BGE.707.c$BGE_mean - BGE.707.c$BGE_se, angle = 90,
+arrows(x0 = c(1:4), y0 = BGE.707.c$BGE_mean, y1 = BGE.707.c$BGE_mean - 
+         BGE.707.c$BGE_se, angle = 90,
        length=0.1, lwd = 2)
-arrows(x0 = c(1:4), y0 = BGE.707.c$BGE_mean, y1 = BGE.707.c$BGE_mean + BGE.707.c$BGE_se, angle = 90,
+arrows(x0 = c(1:4), y0 = BGE.707.c$BGE_mean, y1 = BGE.707.c$BGE_mean + 
+         BGE.707.c$BGE_se, angle = 90,
        length=0.1, lwd = 2)
 
-axis(side = 1, labels = c("Ancestor", "A-1", "B-1", "C-1"), at = c(1:4), lwd.ticks = 2, cex = 2)
-axis(side = 2, labels = T, at = c(0.22, 0.24, 0.26, 0.28), las = 1, lwd.ticks = 2)
+axis(side = 1, labels = c("Ancestor", "A-1", "B-1", "C-1"), 
+     at = c(1:4), lwd.ticks = 2, cex = 2)
+axis(side = 2, labels = T, at = c(0.22, 0.24, 0.26, 0.28), 
+     las = 1, lwd.ticks = 2)
 axis(side=1, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
 axis(side=3, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(1:4))
 axis(side=1, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(1:4))
 axis(side=3, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(1:4))
-axis(side = 2, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
-axis(side = 4, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
-axis(side = 2, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
-axis(side = 4, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, at = c(0.22, 0.24, 0.26, 0.28))
-
+axis(side = 2, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, 
+     at = c(0.22, 0.24, 0.26, 0.28))
+axis(side = 4, lwd.ticks = 2, tck = -0.02, labels=F, cex.axis=1, 
+     at = c(0.22, 0.24, 0.26, 0.28))
+axis(side = 2, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, 
+     at = c(0.22, 0.24, 0.26, 0.28))
+axis(side = 4, lwd.ticks = 2, tck = 0.01, labels=F, cex.axis=1, 
+     at = c(0.22, 0.24, 0.26, 0.28))
 box(lwd = 2)
 
 mtext("BGE", side = 2 , line =3.5, cex = 1.5)
@@ -183,6 +211,162 @@ graphics.off() # shuts down open devices
 ```
 
 ```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="14C-Succinate Recovery and BGE"}
-img <- readPNG("./figures/BGE707.png")
+img <- readPNG("../figures/BGE707.png")
+ grid.raster(img)
+```
+
+# Experiment 2: 14C Succinate BGE Using Michaelis-Menten Experiment
+## Data Import
+```{r, results='hide'}
+KBS0802.data <- read.csv("../data/BGE/20160306_BRBP.csv", header = T)
+```
+
+## Data Processing
+```{r, results='hide'}
+# Raw Data For Intra Vial Test
+voucher802  <- KBS0802.data[grep("Voucher", KBS0802.data$Tube), ]
+control802   <- KBS0802.data[grep("Control", KBS0802.data$Tube), ]
+
+# Merge Datasets
+BGE.data.full <- rbind(KBS0802.data)
+
+# Remove Control and Voucher
+BGE.data <- BGE.data.full[-which(BGE.data.full$Tube == "Voucher" | 
+                                   BGE.data.full$Tube == "Control"), ]
+BGE.data$CPM.c <- NA
+
+# Turn Conc into Factor
+BGE.data$Conc <- as.factor(BGE.data$Conc)
+
+# Correct CPM data for entire contents of fraction
+for (i in 1:dim(BGE.data)[1]){
+  if (BGE.data$Sample[i] == "Cells"){
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (6150/1500)
+  } else {
+  if (BGE.data$Sample[i] == "Trap"){
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (500/100)
+  } else {
+  if (BGE.data$Sample[i] == "Sup"){
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (6150/100)
+  }
+  else {
+    BGE.data$CPM.c[i] <- NA
+  }}}
+}
+
+# Re-organize data
+BGE.data.m <- melt(BGE.data)
+BGE.data.p <- cast(BGE.data.m, Tube + Organism + Conc + 
+                     Sample ~ variable, subset=variable=="CPM.c",  
+                   fun.aggregate = c(mean, CV))
+
+# Calculate Percentages given Voucher
+BGE.data.p$CPM.p <- NA
+for (i in 1:dim(BGE.data.p)[1]){
+    BGE.data.p$CPM.p <- BGE.data.p$CPM.c_mean / voucher802$CPM
+  }
+
+# Mass Balance
+mass.l <- melt(as.data.frame(BGE.data.p))
+mass <- cast(mass.l, Tube + Organism + Conc ~ variable, 
+             subset=variable == "CPM.p", fun.aggregate = sum)
+mean(mass$CPM.p)
+
+# Drop Levels (needed?)
+BGE.802 <- droplevels(BGE.data.p[grep("802", BGE.data.p$Organism), ])
+levels(BGE.802$Tube)
+
+# Turn percentages into concentrations given experimental concentration
+BGE.802.w <- reshape(BGE.802, idvar = "Tube", direction="wide", 
+                     v.names = "CPM.p", timevar = "Sample", 
+                     drop = c("CPM.c_mean", "CPM.c_CV"))
+BGE.802.w$CPM.p.Resp <- 1 - (BGE.802.w$CPM.p.Cells + BGE.802.w$CPM.p.Sup)
+BGE.802.w$Conc <- as.numeric(as.character(BGE.802.w$Conc))
+BGE.802.w$Conc.Cells <- BGE.802.w$CPM.p.Cells * BGE.802.w$Conc
+BGE.802.w$Conc.Sup <- BGE.802.w$CPM.p.Sup * BGE.802.w$Conc
+BGE.802.w$Conc.Trap <- BGE.802.w$CPM.p.Trap * BGE.802.w$Conc
+BGE.802.w$Conc.Resp <- BGE.802.w$CPM.p.Resp * BGE.802.w$Conc
+
+# Calculate BGE
+BGE.802.w$BGE <- BGE.802.w$CPM.p.Cells / (BGE.802.w$CPM.p.Cells + 
+                                            BGE.802.w$CPM.p.Resp)
+
+# Recovery
+BGE.802.w$Recovery <- rowSums(BGE.802.w[,4:6])
+```
+
+## Michaelis Menten Plot
+```{r, results = 'hide'}
+# Plot
+png(filename="../figures/MM802-14C.png",
+    width = 1000, height = 1600, res = 96*2)
+
+par(mfrow = c(1,1), mar = c(0, 6, 0, 0) + 0.5, oma = c(4, 0, 1, 1) + 0.5)
+layout(rbind(1, 2, 3), height = c(3, 3, 3)) 
+
+prod_plot <- plot(Conc.Cells ~ Conc, data = BGE.802.w, 
+                 pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0.0, 0.15))
+axis(side=2, lwd.ticks = 2, tck=-0.04, labels=T, las = 1, cex.axis = 1.5)
+axis(side=2, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.04,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+mtext("BP", side = 2 , line = 4, cex = 1.5)
+# mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
+box(lwd = 3)
+resp_plot <- plot(Conc.Resp ~ Conc, data = BGE.802.w, 
+                 pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0.1, 0.9))
+axis(side=2, lwd.ticks = 2, tck=-0.04, labels=T, las = 1, cex.axis = 1.5)
+axis(side=2, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.04,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+mtext("BR", side = 2 , line = 4, cex = 1.5)
+# mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
+box(lwd = 3)
+bge_plot <- plot(BGE ~ Conc, data = BGE.802.w, 
+                 pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0.05, 0.22))
+axis(side=2, lwd.ticks = 2, tck=-0.04, labels=T, las = 1, cex.axis = 1.5)
+axis(side=2, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1.5, las = 1, tck = -0.04,
+     at = c(0, 2.5, 5, 7.5, 10), labels = T)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+mtext("BGE", side = 2 , line = 4, cex = 1.5)
+box(lwd = 3)
+mtext("Succinate (mM)", side = 1, line = 3.5, outer=F, cex = 1.5)
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+```
+
+```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="BGE Under Michaelis Menten Dynamics"}
+img <- readPNG("../figures/MM802-14C.png")
  grid.raster(img)
 ```

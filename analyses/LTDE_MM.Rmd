@@ -179,13 +179,15 @@ levels(BGE.802$Tube)
 
 # Turn percentages into concentrations given experimental concentration
 BGE.802.w <- reshape(BGE.802, idvar = "Tube", direction="wide", v.names = "CPM.p", timevar = "Sample", drop = c("CPM.c_mean", "CPM.c_CV"))
+BGE.802.w$CPM.p.Resp <- 1 - (BGE.802.w$CPM.p.Cells + BGE.802.w$CPM.p.Sup)
 BGE.802.w$Conc <- as.numeric(as.character(BGE.802.w$Conc))
 BGE.802.w$Conc.Cells <- BGE.802.w$CPM.p.Cells * BGE.802.w$Conc
 BGE.802.w$Conc.Sup <- BGE.802.w$CPM.p.Sup * BGE.802.w$Conc
 BGE.802.w$Conc.Trap <- BGE.802.w$CPM.p.Trap * BGE.802.w$Conc
+BGE.802.w$Conc.Resp <- BGE.802.w$CPM.p.Resp * BGE.802.w$Conc
 
 # Calculate BGE
-BGE.802.w$BGE <- BGE.802.w$CPM.p.Cells / (BGE.802.w$CPM.p.Cells + BGE.802.w$CPM.p.Trap)
+BGE.802.w$BGE <- BGE.802.w$CPM.p.Cells / (BGE.802.w$CPM.p.Cells + BGE.802.w$CPM.p.Resp)
 
 # Recovery
 BGE.802.w$Recovery <- rowSums(BGE.802.w[,4:6])
@@ -215,21 +217,21 @@ axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.025,
      at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
 axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.025,
      at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
-axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
-     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
-axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
-     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
-axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
-     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
-axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
-     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+#axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+#     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+#axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+#     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+#axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+#     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+#axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+#     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
 mtext("BP", side = 2 , line = 4, cex = 1.5)
 mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
 box(lwd = 2)
-resp_plot <- plot(Conc.Trap ~ log10(Conc), data = BGE.802.w, 
+resp_plot <- plot(Conc.Resp ~ log10(Conc), data = BGE.802.w, 
                  pch = 15, cex = 1.5, col = "cornflowerblue",
                  xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
-                 ylim = c(0.05, 0.55))
+                 ylim = c(0.1, 0.9))
 axis(side=2, lwd.ticks = 2, tck=-0.05, labels=T, las = 1)
 axis(side=2, lwd.ticks = 2, tck= 0.025, labels=F)
 axis(side=4, lwd.ticks = 2, tck=-0.025, labels=F)
@@ -242,28 +244,28 @@ axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.025,
      at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
 axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.025,
      at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
-axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
-     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
-axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
-     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
-axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
-     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
-axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
-     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+#axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+#     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+#axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+#     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+#axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+#     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+#axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+#     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
 mtext("BR", side = 2 , line = 4, cex = 1.5)
 mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
 box(lwd = 2)
 bge_plot <- plot(BGE ~ log10(Conc), data = BGE.802.w, 
                  pch = 15, cex = 1.5, col = "cornflowerblue",
                  xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
-                 ylim = c(0.15, 0.3))
+                 ylim = c(0.05, 0.22))
 axis(side=2, lwd.ticks = 2, tck=-0.05, labels=T, las = 1)
 axis(side=2, lwd.ticks = 2, tck= 0.025, labels=F)
 axis(side=4, lwd.ticks = 2, tck=-0.025, labels=F)
 axis(side=4, lwd.ticks = 2, tck= 0.025, labels=F)
 axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.05,
      at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = c(0.1, 0.25, 0.5, 1, 2.5, 5, 10))
-axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.025,
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.05,
      at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
 axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.025,
      at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
@@ -271,12 +273,12 @@ axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.025,
      at = log10(c(0.1, 0.25, 0.5, 1, 2.5, 5, 10)), labels = F)
 axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
      at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
-axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+axis(side = 1, lwd.ticks = 2, cex.axis = 1, tck = 0.03,
      at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
-axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
-     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
-axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
-     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+#axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = -0.01,
+#     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
+#axis(side = 3, lwd.ticks = 2, cex.axis = 1, tck = 0.01,
+#     at = log10(c(seq(0.1, 1, by = 0.1), seq(1, 10, by = 1))), labels =F)
 mtext("BGE", side = 2 , line = 4, cex = 1.5)
 box(lwd = 2)
 mtext("Succinate (mM)", side = 1, line = 3, outer=F, cex = 1.5)
@@ -284,18 +286,23 @@ mtext("Succinate (mM)", side = 1, line = 3, outer=F, cex = 1.5)
 
 
 
+test1 <- lm(BGE ~ log10(Conc), data = BGE.802.w)
 
 
 
+head(BGE.802.w)
 
-
-
-
+par(mar = c(5,5,0.5,0.5), oma = c(0.5, 0.5, 0.5, 0.5))
 layout(1)
-plot(BGE ~ Conc.Cells, data = BGE.802.w)
-,
-                 ylab = "", yaxt= "n", xaxt = "n", xlab = "",
-        xlim = c(0.5, 4.5), ylim = c(0.26, 0.33))
+plot(Conc.Sup ~ Conc, data = BGE.802.w,
+     xlab = "Succinate (mM)", ylab = "Supernatant (mM C)")
+abline(a = 0, b = 1)
+
+
+
+
+                # ylab = "", yaxt= "n", xaxt = "n", xlab = "",
+     #   xlim = c(0.5, 4.5), ylim = c(0.26, 0.33))
 
 arrows(x0 = c(1:4), y0 = BGE.802.c$BGE_mean, y1 = BGE.802.c$BGE_mean - BGE.802.c$BGE_se, angle = 90,
        length=0.1, lwd = 2)
