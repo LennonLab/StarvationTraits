@@ -219,6 +219,7 @@ img <- readPNG("../figures/BGE707.png")
 ## Data Import
 ```{r, results='hide'}
 KBS0802.data <- read.csv("../data/BGE/20160306_BRBP.csv", header = T)
+KBS0707.data <- read.csv("../data/BGE/20160430_BRBP.csv", header = T)
 ```
 
 ## Data Processing
@@ -226,28 +227,48 @@ KBS0802.data <- read.csv("../data/BGE/20160306_BRBP.csv", header = T)
 # Raw Data For Intra Vial Test
 voucher802  <- KBS0802.data[grep("Voucher", KBS0802.data$Tube), ]
 control802   <- KBS0802.data[grep("Control", KBS0802.data$Tube), ]
+voucher707  <- KBS0707.data[grep("Voucher", KBS0707.data$Tube), ]
+control707   <- KBS0707.data[grep("Control", KBS0707.data$Tube), ]
+blank802  <- KBS0802.data[grep("Blank", KBS0802.data$Organism), ]
+kill802  <- KBS0802.data[grep("KC", KBS0802.data$Organism), ]
+blank707  <- KBS0707.data[grep("Blank", KBS0707.data$Organism), ]
+kill707  <- KBS0707.data[grep("KC", KBS0707.data$Organism), ]
 
 # Merge Datasets
-BGE.data.full <- rbind(KBS0802.data)
+BGE.data.full <- rbind(KBS0802.data, KBS0707.data)
 
 # Remove Control and Voucher
 BGE.data <- BGE.data.full[-which(BGE.data.full$Tube == "Voucher" | 
-                                   BGE.data.full$Tube == "Control"), ]
+                                   BGE.data.full$Tube == "Control" |
+                                   BGE.data.full$Organism == "Blank" |
+                                   BGE.data.full$Organism == "KC"), ]
 BGE.data$CPM.c <- NA
 
 # Turn Conc into Factor
 BGE.data$Conc <- as.factor(BGE.data$Conc)
 
+# Create Vector of Final Vol
+BGE.data$Vol <- NA
+for (i in 1:dim(BGE.data)[1]){
+  if (BGE.data$Organism[i] == "KBS0802"){
+    BGE.data$Vol[i] = 6150
+  } else {
+    if (BGE.data$Organism[i] == "KBS0707") {
+      BGE.data$Vol[i] = 6200
+    }
+  }
+}
+
 # Correct CPM data for entire contents of fraction
 for (i in 1:dim(BGE.data)[1]){
   if (BGE.data$Sample[i] == "Cells"){
-    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (6150/1500)
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (BGE.data$Vol[i]/1500)
   } else {
   if (BGE.data$Sample[i] == "Trap"){
     BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (500/100)
   } else {
   if (BGE.data$Sample[i] == "Sup"){
-    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (6150/100)
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (BGE.data$Vol[i]/100)
   }
   else {
     BGE.data$CPM.c[i] <- NA
@@ -258,12 +279,18 @@ for (i in 1:dim(BGE.data)[1]){
 BGE.data.m <- melt(BGE.data)
 BGE.data.p <- cast(BGE.data.m, Tube + Organism + Conc + 
                      Sample ~ variable, subset=variable=="CPM.c",  
-                   fun.aggregate = c(mean, CV))
+                   fun.aggregate = mean)
 
 # Calculate Percentages given Voucher
 BGE.data.p$CPM.p <- NA
 for (i in 1:dim(BGE.data.p)[1]){
-    BGE.data.p$CPM.p <- BGE.data.p$CPM.c_mean / voucher802$CPM
+  if (BGE.data.p$Organism[i] == "KBS0802"){
+    BGE.data.p$CPM.p[i] <- BGE.data.p$CPM.c[i] / voucher802$CPM
+  } else {
+    if (BGE.data.p$Organism[i] == "KBS0707"){
+      BGE.data.p$CPM.p[i] <- BGE.data.p$CPM.c[i] / voucher707$CPM
+    } else {}
+  } 
   }
 
 # Mass Balance
@@ -274,12 +301,12 @@ mean(mass$CPM.p)
 
 # Drop Levels (needed?)
 BGE.802 <- droplevels(BGE.data.p[grep("802", BGE.data.p$Organism), ])
-levels(BGE.802$Tube)
+BGE.707 <- droplevels(BGE.data.p[grep("707", BGE.data.p$Organism), ])
 
 # Turn percentages into concentrations given experimental concentration
 BGE.802.w <- reshape(BGE.802, idvar = "Tube", direction="wide", 
                      v.names = "CPM.p", timevar = "Sample", 
-                     drop = c("CPM.c_mean", "CPM.c_CV"))
+                     drop = c("CPM.c"))
 BGE.802.w$CPM.p.Resp <- 1 - (BGE.802.w$CPM.p.Cells + BGE.802.w$CPM.p.Sup)
 BGE.802.w$Conc <- as.numeric(as.character(BGE.802.w$Conc))
 BGE.802.w$Conc.Cells <- BGE.802.w$CPM.p.Cells * BGE.802.w$Conc
@@ -287,15 +314,28 @@ BGE.802.w$Conc.Sup <- BGE.802.w$CPM.p.Sup * BGE.802.w$Conc
 BGE.802.w$Conc.Trap <- BGE.802.w$CPM.p.Trap * BGE.802.w$Conc
 BGE.802.w$Conc.Resp <- BGE.802.w$CPM.p.Resp * BGE.802.w$Conc
 
+BGE.707.w <- reshape(BGE.802, idvar = "Tube", direction="wide", 
+                     v.names = "CPM.p", timevar = "Sample", 
+                     drop = c("CPM.c"))
+BGE.707.w$CPM.p.Resp <- 1 - (BGE.707.w$CPM.p.Cells + BGE.707.w$CPM.p.Sup)
+BGE.707.w$Conc <- as.numeric(as.character(BGE.707.w$Conc))
+BGE.707.w$Conc.Cells <- BGE.707.w$CPM.p.Cells * BGE.802.w$Conc
+BGE.707.w$Conc.Sup <- BGE.707.w$CPM.p.Sup * BGE.707.w$Conc
+BGE.707.w$Conc.Trap <- BGE.707.w$CPM.p.Trap * BGE.707.w$Conc
+BGE.707.w$Conc.Resp <- BGE.707.w$CPM.p.Resp * BGE.707.w$Conc
+
 # Calculate BGE
 BGE.802.w$BGE <- BGE.802.w$CPM.p.Cells / (BGE.802.w$CPM.p.Cells + 
                                             BGE.802.w$CPM.p.Resp)
+BGE.707.w$BGE <- BGE.707.w$CPM.p.Cells / (BGE.707.w$CPM.p.Cells + 
+                                            BGE.707.w$CPM.p.Resp)
 
 # Recovery
 BGE.802.w$Recovery <- rowSums(BGE.802.w[,4:6])
+BGE.707.w$Recovery <- rowSums(BGE.707.w[,4:6])
 ```
 
-## Michaelis Menten Plot
+## Michaelis Menten Plot KBS802
 ```{r, results = 'hide'}
 # Plot
 png(filename="../figures/MM802-14C.png",
