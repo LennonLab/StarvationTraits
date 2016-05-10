@@ -314,12 +314,12 @@ BGE.802.w$Conc.Sup <- BGE.802.w$CPM.p.Sup * BGE.802.w$Conc
 BGE.802.w$Conc.Trap <- BGE.802.w$CPM.p.Trap * BGE.802.w$Conc
 BGE.802.w$Conc.Resp <- BGE.802.w$CPM.p.Resp * BGE.802.w$Conc
 
-BGE.707.w <- reshape(BGE.802, idvar = "Tube", direction="wide", 
+BGE.707.w <- reshape(BGE.707, idvar = "Tube", direction="wide", 
                      v.names = "CPM.p", timevar = "Sample", 
                      drop = c("CPM.c"))
 BGE.707.w$CPM.p.Resp <- 1 - (BGE.707.w$CPM.p.Cells + BGE.707.w$CPM.p.Sup)
 BGE.707.w$Conc <- as.numeric(as.character(BGE.707.w$Conc))
-BGE.707.w$Conc.Cells <- BGE.707.w$CPM.p.Cells * BGE.802.w$Conc
+BGE.707.w$Conc.Cells <- BGE.707.w$CPM.p.Cells * BGE.707.w$Conc
 BGE.707.w$Conc.Sup <- BGE.707.w$CPM.p.Sup * BGE.707.w$Conc
 BGE.707.w$Conc.Trap <- BGE.707.w$CPM.p.Trap * BGE.707.w$Conc
 BGE.707.w$Conc.Resp <- BGE.707.w$CPM.p.Resp * BGE.707.w$Conc
@@ -341,10 +341,10 @@ BGE.707.w$Recovery <- rowSums(BGE.707.w[,4:6])
 png(filename="../figures/MM802-14C.png",
     width = 1000, height = 1600, res = 96*2)
 
-par(mfrow = c(1,1), mar = c(0, 6, 0, 0) + 0.5, oma = c(4, 0, 1, 1) + 0.5)
+par(mfrow = c(1,1), mar = c(0, 6, 0, 0) + 0.5, oma = c(5, 0, 4, 1) + 0.5)
 layout(rbind(1, 2, 3), height = c(3, 3, 3)) 
 
-prod_plot <- plot(Conc.Cells ~ Conc, data = BGE.802.w, 
+prod_plot <- plot(Conc.Cells ~ jitter(Conc), data = BGE.802.w, 
                  pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
                  xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
                  ylim = c(0.0, 0.15))
@@ -361,9 +361,10 @@ axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
 axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
      at = c(0, 2.5, 5, 7.5, 10), labels = F)
 mtext("BP", side = 2 , line = 4, cex = 1.5)
+mtext("KBS0802", side = 3, line = 1.5, outer = F, cex = 1.5)
 # mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
 box(lwd = 3)
-resp_plot <- plot(Conc.Resp ~ Conc, data = BGE.802.w, 
+resp_plot <- plot(Conc.Resp ~ jitter(Conc), data = BGE.802.w, 
                  pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
                  xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
                  ylim = c(0.1, 0.9))
@@ -404,9 +405,86 @@ mtext("Succinate (mM)", side = 1, line = 3.5, outer=F, cex = 1.5)
 
 dev.off() # this writes plot to folder
 graphics.off() # shuts down open devices
+#```
+
+#```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="BGE Under Michaelis Menten Dynamics"}
+img <- readPNG("../figures/MM802-14C.png")
+ grid.raster(img)
+```
+
+## Michaelis Menten Plot KBS707
+```{r, results = 'hide'}
+# Plot
+png(filename="../figures/MM707-14C.png",
+    width = 1000, height = 1600, res = 96*2)
+
+par(mfrow = c(1,1), mar = c(0, 6, 0, 0) + 0.5, oma = c(5, 0, 4, 1) + 0.5)
+layout(rbind(1, 2, 3), height = c(3, 3, 3)) 
+
+prod_plot <- plot(Conc.Cells ~ jitter(Conc), data = BGE.707.w, 
+                 pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0.01, 0.09), xlim = c(0, 10))
+axis(side=2, lwd.ticks = 2, tck=-0.04, labels=T, las = 1, cex.axis = 1.5)
+axis(side=2, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+mtext("BP", side = 2 , line = 4, cex = 1.5)
+mtext("KBS0707", side = 3, line = 1.5, outer = F, cex = 1.5)
+# mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
+box(lwd = 3)
+resp_plot <- plot(Conc.Resp ~ jitter(Conc), data = BGE.707.w, 
+                 pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0, 1.5), xlim = c(0, 10))
+axis(side=2, lwd.ticks = 2, tck=-0.04, labels=T, las = 1, cex.axis = 1.5)
+axis(side=2, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+mtext("BR", side = 2 , line = 4, cex = 1.5)
+# mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
+box(lwd = 3)
+bge_plot <- plot(BGE ~ jitter(Conc), data = BGE.707.w, 
+                 pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0.02, 0.18), xlim = c(0, 10))
+axis(side=2, lwd.ticks = 2, tck=-0.04, labels=T, las = 1, cex.axis = 1.5)
+axis(side=2, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1.5, las = 1, tck = -0.04,
+     at = c(0, 2.5, 5, 7.5, 10), labels = T)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+mtext("BGE", side = 2 , line = 4, cex = 1.5)
+box(lwd = 3)
+mtext("Succinate (mM)", side = 1, line = 3.5, outer=F, cex = 1.5)
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
 ```
 
 ```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="BGE Under Michaelis Menten Dynamics"}
-img <- readPNG("../figures/MM802-14C.png")
+img <- readPNG("../figures/MM707-14C.png")
  grid.raster(img)
 ```
