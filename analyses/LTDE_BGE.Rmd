@@ -281,6 +281,50 @@ for (i in 1:dim(BGE.data)[1]){
   }
 }
 
+# Create Vector of Cell Density
+BGE.data$Den <- NA
+for (i in 1:dim(BGE.data)[1]){
+  if (BGE.data$Organism[i] == "KBS0802"){
+    BGE.data$Den[i] = 1.13e8
+  } else {
+    if (BGE.data$Organism[i] == "KBS0707") {
+      BGE.data$Den[i] = 1.94e8
+    } else {
+      if (BGE.data$Organism[i] == "KBS0707_A1") {
+      BGE.data$Den[i] = 1.62e8 
+      } else {
+      if (BGE.data$Organism[i] == "KBS0707_B1") {
+      BGE.data$Den[i] = 6.3e8 
+        }
+      }
+    }
+  }
+}
+
+# Create Vector of Incubation Length
+BGE.data$Time <- NA
+for (i in 1:dim(BGE.data)[1]){
+  if (BGE.data$Organism[i] == "KBS0802"){
+    BGE.data$Time[i] = 12
+  } else {
+    if (BGE.data$Organism[i] == "KBS0707") {
+      BGE.data$Time[i] = 15.83
+    } else {
+      if (BGE.data$Organism[i] == "KBS0707_A1") {
+      BGE.data$Time[i] = 12.33 
+      } else {
+      if (BGE.data$Organism[i] == "KBS0707_B1") {
+      BGE.data$Time[i] = 15 
+        }
+      }
+    }
+  }
+}
+
+# Turn Conc into Factor
+BGE.data$Den <- as.factor(BGE.data$Den)
+BGE.data$Time <- as.factor(BGE.data$Time)
+
 # Correct CPM data for entire contents of fraction
 for (i in 1:dim(BGE.data)[1]){
   if (BGE.data$Sample[i] == "Cells"){
@@ -299,7 +343,7 @@ for (i in 1:dim(BGE.data)[1]){
 
 # Re-organize data
 BGE.data.m <- melt(BGE.data)
-BGE.data.p <- cast(BGE.data.m, Tube + Organism + Conc + 
+BGE.data.p <- cast(BGE.data.m, Tube + Organism + Conc + Den + Time + 
                      Sample ~ variable, subset=variable=="CPM.c",  
                    fun.aggregate = mean)
 
@@ -337,20 +381,23 @@ BGE.802.w <- reshape(BGE.802, idvar = "Tube", direction="wide",
                      drop = c("CPM.c"))
 BGE.802.w$CPM.p.Resp <- 1 - (BGE.802.w$CPM.p.Cells + BGE.802.w$CPM.p.Sup)
 BGE.802.w$Conc <- as.numeric(as.character(BGE.802.w$Conc))
-BGE.802.w$Conc.Cells <- BGE.802.w$CPM.p.Cells * BGE.802.w$Conc
-BGE.802.w$Conc.Sup <- BGE.802.w$CPM.p.Sup * BGE.802.w$Conc
-BGE.802.w$Conc.Trap <- BGE.802.w$CPM.p.Trap * BGE.802.w$Conc
-BGE.802.w$Conc.Resp <- BGE.802.w$CPM.p.Resp * BGE.802.w$Conc
+BGE.802.w$Den <- as.numeric(as.character(BGE.802.w$Den))
+BGE.802.w$Conc.Cells <- BGE.802.w$CPM.p.Cells * BGE.802.w$Conc / BGE.802.w$Den
+BGE.802.w$Conc.Sup <- BGE.802.w$CPM.p.Sup * BGE.802.w$Conc  / BGE.802.w$Den
+BGE.802.w$Conc.Trap <- BGE.802.w$CPM.p.Trap * BGE.802.w$Conc  / BGE.802.w$Den
+BGE.802.w$Conc.Resp <- BGE.802.w$CPM.p.Resp * BGE.802.w$Conc  / BGE.802.w$Den
 
 BGE.707.w <- reshape(BGE.707, idvar = c("Organism", "Tube"), direction="wide", 
                      v.names = "CPM.p", timevar = "Sample", 
                      drop = c("CPM.c")) 
 BGE.707.w$CPM.p.Resp <- 1 - (BGE.707.w$CPM.p.Cells + BGE.707.w$CPM.p.Sup)
 BGE.707.w$Conc <- as.numeric(as.character(BGE.707.w$Conc))
-BGE.707.w$Conc.Cells <- BGE.707.w$CPM.p.Cells * BGE.707.w$Conc
-BGE.707.w$Conc.Sup <- BGE.707.w$CPM.p.Sup * BGE.707.w$Conc
-BGE.707.w$Conc.Trap <- BGE.707.w$CPM.p.Trap * BGE.707.w$Conc
-BGE.707.w$Conc.Resp <- BGE.707.w$CPM.p.Resp * BGE.707.w$Conc
+BGE.707.w$Den <- as.numeric(as.character(BGE.707.w$Den))
+BGE.707.w$Time <- as.numeric(as.character(BGE.707.w$Time))
+BGE.707.w$Conc.Cells <- BGE.707.w$CPM.p.Cells * 5 * BGE.707.w$Conc /200 / BGE.707.w$Den * 10e12 / BGE.707.w$Time
+BGE.707.w$Conc.Sup <- BGE.707.w$CPM.p.Sup * 5 * BGE.707.w$Conc / 200 / BGE.707.w$Den * 10e12 / BGE.707.w$Time
+BGE.707.w$Conc.Trap <- BGE.707.w$CPM.p.Trap * 5 * BGE.707.w$Conc / 200 / BGE.707.w$Den * 10e12 / BGE.707.w$Time
+BGE.707.w$Conc.Resp <- BGE.707.w$CPM.p.Resp * 5* BGE.707.w$Conc / 200 / BGE.707.w$Den * 10e12 / BGE.707.w$Time
 
 # Calculate BGE
 BGE.802.w$BGE <- BGE.802.w$CPM.p.Cells / (BGE.802.w$CPM.p.Cells + 
@@ -359,8 +406,8 @@ BGE.707.w$BGE <- BGE.707.w$CPM.p.Cells / (BGE.707.w$CPM.p.Cells +
                                             BGE.707.w$CPM.p.Resp)
 
 # Recovery
-BGE.802.w$Recovery <- rowSums(BGE.802.w[,4:6])
-BGE.707.w$Recovery <- rowSums(BGE.707.w[,4:6])
+BGE.802.w$Recovery <- rowSums(BGE.802.w[,6:8])
+BGE.707.w$Recovery <- rowSums(BGE.707.w[,6:8])
 ```
 
 ## Michaelis Menten Plot KBS802
@@ -452,7 +499,7 @@ layout(rbind(1, 2, 3), height = c(3, 3, 3))
 prod_plot <- plot(Conc.Cells ~ jitter(Conc), data = BGE.707.w, type = "n",
                  pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
                  xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
-                 ylim = c(0.01, 0.09), xlim = c(0, 10))
+                 ylim = c(0, 12), xlim = c(0, 10))
 points(Conc.Cells ~ jitter(Conc), data = BGE.707.w[BGE.707.w$Organism == "KBS0707", ],
        pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5)
 lines(lowess(BGE.707.w[BGE.707.w$Organism == "KBS0707", ]$Conc, 
@@ -482,14 +529,14 @@ axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
      at = c(0, 2.5, 5, 7.5, 10), labels = F)
 mtext("BP", side = 2 , line = 4, cex = 1.5)
 mtext("KBS0707", side = 3, line = 1.5, outer = F, cex = 1.5)
-legend("bottomright", c("Ancestor", "Derived"), pch = c(22, 21), bty = "n",
+legend("topleft", c("Ancestor", "Derived"), pch = c(22, 21), bty = "n",
        pt.bg = "gray", pt.lwd = 2, cex = 1.25, pt.cex = 2, inset = 0.01)
 # mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
 box(lwd = 3)
 resp_plot <- plot(Conc.Resp ~ jitter(Conc), data = BGE.707.w, type = "n", 
                  pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
                  xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
-                 ylim = c(0, 1.5), xlim = c(0, 10))
+                 ylim = c(0, 120), xlim = c(0, 10))
 points(Conc.Resp ~ jitter(Conc), data = BGE.707.w[BGE.707.w$Organism == "KBS0707", ],
        pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5)
 lines(lowess(BGE.707.w[BGE.707.w$Organism == "KBS0707", ]$Conc, 
@@ -563,3 +610,216 @@ graphics.off() # shuts down open devices
 img <- readPNG("../figures/MM707-14C.png")
  grid.raster(img)
 ```
+
+
+# Repeat Experiment Comparison
+```{r}
+KBS0707B1_A.data <- read.csv("../data/BGE/20160616_BRBP.csv", header = T)
+KBS0707B1_B.data <- read.csv("../data/BGE/20160622_BRBP.csv", header = T)
+
+KBS0707B1_A.data$Organism  <- gsub("KBS0707_B1", "KBS0707B1_A", KBS0707B1_A.data$Organism)
+KBS0707B1_B.data$Organism  <- gsub("KBS0707_B1", "KBS0707B1_B", KBS0707B1_B.data$Organism)
+
+
+voucher707B1_A  <- KBS0707B1.data[grep("Voucher", KBS0707B1_A.data$Tube), ]
+control707B1_A   <- KBS0707B1.data[grep("Control", KBS0707B1_A.data$Tube), ]
+blank707B1_A  <- KBS0707B1.data[grep("Blank", KBS0707B1_A.data$Organism), ]
+kill707B1_A  <- KBS0707B1.data[grep("KC", KBS0707B1_A.data$Organism), ]
+
+voucher707B1_B  <- KBS0707B1.data[grep("Voucher", KBS0707B1_B.data$Tube), ]
+control707B1_B   <- KBS0707B1.data[grep("Control", KBS0707B1_B.data$Tube), ]
+blank707B1_B  <- KBS0707B1.data[grep("Blank", KBS0707B1_B.data$Organism), ]
+kill707B1_B  <- KBS0707B1.data[grep("KC", KBS0707B1_B.data$Organism), ]
+
+# Merge Datasets
+BGE.data.full <- rbind(KBS0707B1_A.data, KBS0707B1_B.data)
+
+# Remove Control and Voucher
+BGE.data <- BGE.data.full[-which(BGE.data.full$Tube == "Voucher" | 
+                                   BGE.data.full$Tube == "Control" |
+                                   BGE.data.full$Organism == "Blank" |
+                                   BGE.data.full$Organism == "KC"), ]
+BGE.data$CPM.c <- NA
+
+# Turn Conc into Factor
+BGE.data$Conc <- as.factor(BGE.data$Conc)
+
+# Create Vector of Final Vol
+BGE.data$Vol <- NA
+for (i in 1:dim(BGE.data)[1]){ 
+  BGE.data$Vol[i] = 6200 
+}
+
+# Correct CPM data for entire contents of fraction
+for (i in 1:dim(BGE.data)[1]){
+  if (BGE.data$Sample[i] == "Cells"){
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (BGE.data$Vol[i]/1500)
+  } else {
+  if (BGE.data$Sample[i] == "Trap"){
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (500/100)
+  } else {
+  if (BGE.data$Sample[i] == "Sup"){
+    BGE.data$CPM.c[i] <- BGE.data$CPM[i] * (BGE.data$Vol[i]/100)
+  }
+  else {
+    BGE.data$CPM.c[i] <- NA
+  }}}
+}
+
+# Re-organize data
+BGE.data.m <- melt(BGE.data)
+BGE.data.p <- cast(BGE.data.m, Tube + Organism + Conc + 
+                     Sample ~ variable, subset=variable=="CPM.c",  
+                   fun.aggregate = mean)
+
+# Calculate Percentages given Voucher
+BGE.data.p$CPM.p <- NA
+for (i in 1:dim(BGE.data.p)[1]){
+      if (BGE.data.p$Organism[i] == "KBS0707B1_A"){
+      BGE.data.p$CPM.p[i] <- BGE.data.p$CPM.c[i] / voucher707B1_A$CPM 
+      } else {
+        if (BGE.data.p$Organism[i] == "KBS0707B1_B"){
+        BGE.data.p$CPM.p[i] <- BGE.data.p$CPM.c[i] / voucher707B1_B$CPM         
+      }
+    }} 
+
+# Mass Balance
+mass.l <- melt(as.data.frame(BGE.data.p))
+mass <- cast(mass.l, Tube + Organism + Conc ~ variable, 
+             subset=variable == "CPM.p", fun.aggregate = sum)
+mean(mass$CPM.p)
+
+# Drop Levels (needed?)
+BGE.707 <- droplevels(BGE.data.p[grep("707", BGE.data.p$Organism), ])
+
+# Turn percentages into concentrations given experimental concentration
+BGE.707.w <- reshape(BGE.707, idvar = c("Organism", "Tube"), direction="wide", 
+                     v.names = "CPM.p", timevar = "Sample", 
+                     drop = c("CPM.c")) 
+BGE.707.w$CPM.p.Resp <- 1 - (BGE.707.w$CPM.p.Cells + BGE.707.w$CPM.p.Sup)
+BGE.707.w$Conc <- as.numeric(as.character(BGE.707.w$Conc))
+BGE.707.w$Conc.Cells <- BGE.707.w$CPM.p.Cells * BGE.707.w$Conc
+BGE.707.w$Conc.Sup <- BGE.707.w$CPM.p.Sup * BGE.707.w$Conc
+BGE.707.w$Conc.Trap <- BGE.707.w$CPM.p.Trap * BGE.707.w$Conc
+BGE.707.w$Conc.Resp <- BGE.707.w$CPM.p.Resp * BGE.707.w$Conc
+
+# Calculate BGE
+BGE.707.w$BGE <- BGE.707.w$CPM.p.Cells / (BGE.707.w$CPM.p.Cells + 
+                                            BGE.707.w$CPM.p.Resp)
+
+# Recovery
+BGE.707.w$Recovery <- rowSums(BGE.707.w[,4:6])
+
+```
+
+
+## Michaelis Menten Plot KBS707
+```{r, results = 'hide'}
+# Plot
+png(filename="../figures/MM707_Comp-14C.png",
+    width = 1000, height = 1600, res = 96*2)
+
+par(mfrow = c(1,1), mar = c(0, 6, 0, 0) + 0.5, oma = c(5, 0, 4, 1) + 0.5)
+layout(rbind(1, 2, 3), height = c(3, 3, 3)) 
+
+prod_plot <- plot(Conc.Cells ~ jitter(Conc), data = BGE.707.w, type = "n",
+                 pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0.01, 0.1), xlim = c(0, 10))
+points(Conc.Cells ~ jitter(Conc), data = BGE.707.w[BGE.707.w$Organism == "KBS0707B1_A", ],
+       pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5)
+lines(lowess(BGE.707.w[BGE.707.w$Organism == "KBS0707B1_A", ]$Conc, 
+             BGE.707.w[BGE.707.w$Organism == "KBS0707B1_A", ]$Conc.Cells),
+             lty = 2, lwd = 3)
+points(Conc.Cells ~ jitter(Conc), data = BGE.707.w[BGE.707.w$Organism == "KBS0707B1_B", ],
+       pch = 21, cex = 3, col = "black", bg = "gray", lwd = 2.5)
+lines(lowess(BGE.707.w[BGE.707.w$Organism == "KBS0707B1_B", ]$Conc, 
+             BGE.707.w[BGE.707.w$Organism == "KBS0707B1_B", ]$Conc.Cells),
+             lty = 2, lwd = 3)
+axis(side=2, lwd.ticks = 2, tck=-0.04, labels=T, las = 1, cex.axis = 1.5)
+axis(side=2, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+mtext("BP", side = 2 , line = 4, cex = 1.5)
+mtext("KBS0707", side = 3, line = 1.5, outer = F, cex = 1.5)
+
+# mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
+box(lwd = 3)
+resp_plot <- plot(Conc.Resp ~ jitter(Conc), data = BGE.707.w, type = "n", 
+                 pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0, 1.5), xlim = c(0, 10))
+points(Conc.Resp ~ jitter(Conc), data = BGE.707.w[BGE.707.w$Organism == "KBS0707B1_A", ],
+       pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5)
+lines(lowess(BGE.707.w[BGE.707.w$Organism == "KBS0707B1_A", ]$Conc, 
+             BGE.707.w[BGE.707.w$Organism == "KBS0707B1_A", ]$Conc.Resp),
+             lty = 2, lwd = 3)
+points(Conc.Resp ~ jitter(Conc), data = BGE.707.w[BGE.707.w$Organism == "KBS0707B1_B", ],
+       pch = 21, cex = 3, col = "black", bg = "gray", lwd = 2.5)
+lines(lowess(BGE.707.w[BGE.707.w$Organism == "KBS0707B1_B", ]$Conc, 
+             BGE.707.w[BGE.707.w$Organism == "KBS0707B1_B", ]$Conc.Resp),
+             lty = 2, lwd = 3)
+axis(side=2, lwd.ticks = 2, tck=-0.04, labels=T, las = 1, cex.axis = 1.5)
+axis(side=2, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+mtext("BR", side = 2 , line = 4, cex = 1.5)
+# mtext("(mM Carbon)", side = 2, line = 3, cex = 0.8)
+box(lwd = 3)
+bge_plot <- plot(BGE ~ jitter(Conc), data = BGE.707.w, type = "n",
+                 pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
+                 xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
+                 ylim = c(0.02, 0.20), xlim = c(0, 10))
+points(BGE ~ jitter(Conc), data = BGE.707.w[BGE.707.w$Organism == "KBS0707B1_A", ],
+       pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5)
+lines(lowess(BGE.707.w[BGE.707.w$Organism == "KBS0707B1_A", ]$Conc, 
+             BGE.707.w[BGE.707.w$Organism == "KBS0707B1_A", ]$BGE),
+             lty = 2, lwd = 3)
+points(BGE ~ jitter(Conc), data = BGE.707.w[BGE.707.w$Organism == "KBS0707B1_B", ],
+       pch = 21, cex = 3, col = "black", bg = "gray", lwd = 2.5)
+lines(lowess(BGE.707.w[BGE.707.w$Organism == "KBS0707B1_B", ]$Conc, 
+             BGE.707.w[BGE.707.w$Organism == "KBS0707B1_B", ]$BGE),
+             lty = 2, lwd = 3)
+axis(side=2, lwd.ticks = 2, tck=-0.04, labels=T, las = 1, cex.axis = 1.5)
+axis(side=2, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck=-0.02, labels=F)
+axis(side=4, lwd.ticks = 2, tck= 0.02, labels=F)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1.5, las = 1, tck = -0.04,
+     at = c(0, 2.5, 5, 7.5, 10), labels = T)
+axis(side = 1, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = -0.02,
+     at = c(0, 2.5, 5, 10), labels = F)
+axis(side = 3, lwd.ticks = 2 , cex.axis = 1, las = 1, tck = 0.02,
+     at = c(0, 2.5, 5, 7.5, 10), labels = F)
+mtext("BGE", side = 2 , line = 4, cex = 1.5)
+box(lwd = 3)
+mtext("Succinate (mM)", side = 1, line = 3.5, outer=F, cex = 1.5)
+
+dev.off() # this writes plot to folder
+graphics.off() # shuts down open devices
+#```
+
+#```{r fig.width=4, fig.height=4,echo=FALSE,fig.cap="BGE Under Michaelis Menten Dynamics"}
+img <- readPNG("../figures/MM707_Comp-14C.png")
+ grid.raster(img)
+```
+
+
+
