@@ -221,7 +221,7 @@ img <- readPNG("../figures/BGE707.png")
 KBS0802.data <- read.csv("../data/BGE/20160306_BRBP.csv", header = T)
 KBS0707.data <- read.csv("../data/BGE/20160430_BRBP.csv", header = T)
 KBS0707A1.data <- read.csv("../data/BGE/20160525_BRBP.csv", header = T)
-KBS0707B1.data <- read.csv("../data/BGE/20160616_BRBP.csv", header = T)
+KBS0707B1.data <- read.csv("../data/BGE/20160701_BRBP.csv", header = T)
 ```
 
 ## Data Processing
@@ -294,7 +294,7 @@ for (i in 1:dim(BGE.data)[1]){
       BGE.data$Den[i] = 1.62e8 
       } else {
       if (BGE.data$Organism[i] == "KBS0707_B1") {
-      BGE.data$Den[i] = 6.3e8 
+      BGE.data$Den[i] = 1.95e8 
         }
       }
     }
@@ -499,7 +499,7 @@ layout(rbind(1, 2, 3), height = c(3, 3, 3))
 prod_plot <- plot(Conc.Cells ~ jitter(Conc), data = BGE.707.w, type = "n",
                  pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
                  xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
-                 ylim = c(0, 12), xlim = c(0, 10))
+                 ylim = c(0, 16), xlim = c(0, 10))
 points(Conc.Cells ~ jitter(Conc), data = BGE.707.w[BGE.707.w$Organism == "KBS0707", ],
        pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5)
 lines(lowess(BGE.707.w[BGE.707.w$Organism == "KBS0707", ]$Conc, 
@@ -570,7 +570,7 @@ box(lwd = 3)
 bge_plot <- plot(BGE ~ jitter(Conc), data = BGE.707.w, type = "n",
                  pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5,
                  xaxt = 'n', yaxt = 'n', xlab = '', ylab = '',
-                 ylim = c(0.02, 0.20), xlim = c(0, 10))
+                 ylim = c(0.02, 0.25), xlim = c(0, 10))
 points(BGE ~ jitter(Conc), data = BGE.707.w[BGE.707.w$Organism == "KBS0707", ],
        pch = 22, cex = 3, col = "black", bg = "gray", lwd = 2.5)
 lines(lowess(BGE.707.w[BGE.707.w$Organism == "KBS0707", ]$Conc, 
